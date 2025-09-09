@@ -1,0 +1,37 @@
+# FastAPI和Web服务相关
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+python-multipart==0.0.6
+pydantic==2.5.0
+
+# 视频处理
+opencv-python==4.8.1.78
+Pillow==10.1.0
+
+# 异步和并发
+aiofiles==23.2.0
+
+# 现有InstantSplat依赖
+torch
+torchvision
+roma
+evo
+graduio
+matplotlib
+tqdm
+scipy
+einops
+trimesh
+tensorboard
+pyglet<2
+huggingface-hub[torch]>=0.22
+gdown
+imageio
+cython
+icecream
+plyfile
+open3d
+
+# 额外工具
+numpy
+requests

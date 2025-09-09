@@ -1,0 +1,10 @@
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Will watch for changes in these directories: ['/home/livablecity/InstantSplat']
+INFO:     Uvicorn running on http://0.0.0.0:3080 (Press CTRL+C to quit)
+INFO:     Started reloader process [19864] using StatReload
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [19879]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.

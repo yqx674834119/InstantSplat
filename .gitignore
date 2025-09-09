@@ -2,10 +2,12 @@
 .vscode
 .idea
 assets
+Test_data
+temp
 data
 output*
 mast3r/checkpoints
-
+LongSplat
 build
 diff_rasterization/diff_rast.egg-info
 diff_rasterization/dist
