@@ -1,26 +1,31 @@
 #!/bin/bash
 
 # Change the absolute path first!
-DATA_ROOT_DIR="<Absolute_Path>/InstantSplat/assets"
+# DATA_ROOT_DIR="<Absolute_Path>/InstantSplat/assets"
+DATA_ROOT_DIR="/home/livablecity/InstantSplat/assets"  # 改为你的实际路径
+
 OUTPUT_DIR="output_infer"
 DATASETS=(
-    sora
+    mydata
 )
 
 SCENES=(
-    Santorini
-    Art 
+    # Art
+    # building2
+    # ET
+    # forg
+    CAR
 )
 
 N_VIEWS=(
-    3
+   12
 )
 
-gs_train_iter=1000
+gs_train_iter=500
 
 # Function to get the id of an available GPU
 get_available_gpu() {
-    local mem_threshold=500
+    local mem_threshold=10000
     nvidia-smi --query-gpu=index,memory.used --format=csv,noheader,nounits | awk -v threshold="$mem_threshold" -F', ' '
     $2 < threshold { print $1; exit }
     '

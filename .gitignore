@@ -1,7 +1,7 @@
 *.pyc
 .vscode
 .idea
-
+assets
 data
 output*
 mast3r/checkpoints
