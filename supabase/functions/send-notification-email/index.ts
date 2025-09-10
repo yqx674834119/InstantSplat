@@ -2,6 +2,9 @@
 // 使用globalThis访问Deno运行时
 const { Deno } = globalThis as any;
 
+// 基础URL配置
+const BASE_URL = "https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/";
+
 // 邮件通知请求接口
 interface NotificationRequest {
   email: string;
@@ -173,18 +176,20 @@ Deno.serve(async (req: Request): Promise<Response> => {
         <p>3D重建服务通知</p>
     </div>
     <div class="content">
-        ${requestData.additional_data?.download_url ? `
+        ${requestData.task_id ? `
         <div style="text-align: center; margin: 20px 0;">
-            <a href="${requestData.additional_data.download_url}" 
-               style="background: #667eea; color: white; padding: 12px 24px; 
+            <a href="https://viewer.scenegen.cn/?content=${BASE_URL}${requestData.task_id}.compressed.ply" 
+              style="background: #667eea; color: white; padding: 12px 24px; 
                       text-decoration: none; border-radius: 4px; 
                       display: inline-block; font-size: 16px;">
                 🔍 查看重建模型
             </a>
         </div>
         ` : ''}
+
         ${requestData.status ? `<p><span class="status-badge status-${requestData.status}">${requestData.status}</span></p>` : ''}
         ${requestData.task_id ? `<p><strong>任务ID:</strong> ${requestData.task_id}</p>` : ''}
+        ${requestData.task_id ? `<p><strong>下载链接:</strong> <a href="${BASE_URL}${requestData.task_id}.compressed.ply" target="_blank">点击下载</a></p>` : ''}
         ${requestData.timestamp ? `<p><strong>时间:</strong> ${new Date(requestData.timestamp).toLocaleString('zh-CN')}</p>` : ''}
         
         <div class="message-content">

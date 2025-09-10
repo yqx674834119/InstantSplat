@@ -314,7 +314,7 @@ class ReconstructionProcessor:
                     estimated_remaining = max(0, self.config.train_timeout - elapsed)
                     progress_callback(
                         progress, 
-                        f"模型训练中... (已用时: {elapsed:.0f}s, 预计剩余: {estimated_remaining:.0f}s)"
+                        f"模型训练中... (已用时: {elapsed:.0f}s)"
                     )
                 
                 time.sleep(5)  # 每5秒更新一次进度

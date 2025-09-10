@@ -57,16 +57,23 @@ GET /
 
 **请求信息：**
 ```
-POST /upload
+POST /upload?email={email}
 Content-Type: multipart/form-data
 ```
 
 **请求参数：**
 
+**查询参数（URL参数）：**
+
+| 参数名 | 类型 | 必填 | 描述 |
+|--------|------|------|------|
+| `email` | String | 否 | 邮箱地址，用于接收处理完成通知 |
+
+**表单数据参数：**
+
 | 参数名 | 类型 | 必填 | 描述 |
 |--------|------|------|------|
 | `file` | File | 是 | 上传的文件（图像/视频/压缩包） |
-| `email` | String | 否 | 邮箱地址，用于接收处理完成通知 |
 
 **支持的文件格式：**
 - **视频格式：** `.mp4`, `.mov`, `.avi`
@@ -184,9 +191,9 @@ GET /tasks
 
 ---
 
-### 5. 下载处理结果
+### 5. 获取处理结果信息
 
-**接口描述：** 下载任务处理完成后的三维重建结果文件
+**接口描述：** 获取任务处理完成后的文件信息和下载链接
 
 **请求信息：**
 ```
@@ -200,12 +207,36 @@ GET /result/{task_id}
 | `task_id` | String | 是 | 任务唯一标识符 |
 
 **响应格式：**
-- **成功时：** 返回 PLY 格式的点云文件（二进制流）
-- **Content-Type：** `application/octet-stream`
-- **文件名：** `point_cloud_{task_id}.ply`
+```json
+{
+  "task_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "completed",
+  "files": [
+    {
+      "file_id": "550e8400-e29b-41d4-a716-446655440000_point_cloud",
+      "filename": "point_cloud_550e8400-e29b-41d4-a716-446655440000.ply",
+      "file_size": 10485760,
+      "file_type": "application/octet-stream",
+      "download_url": "/download/550e8400-e29b-41d4-a716-446655440000_point_cloud"
+    }
+  ],
+  "message": "结果文件准备就绪"
+}
+```
+
+**响应字段说明：**
+- `task_id`：任务ID
+- `status`：任务状态
+- `files`：可下载的文件列表
+  - `file_id`：文件唯一标识符
+  - `filename`：文件名
+  - `file_size`：文件大小（字节）
+  - `file_type`：文件MIME类型
+  - `download_url`：下载链接
+- `message`：响应消息
 
 **状态码：**
-- `200 OK`：文件下载成功
+- `200 OK`：获取成功
 - `400 Bad Request`：任务尚未完成
 - `404 Not Found`：任务不存在或结果文件不存在
 - `500 Internal Server Error`：文件访问错误
@@ -219,7 +250,42 @@ GET /result/{task_id}
 
 ---
 
-### 6. 删除任务
+### 6. 下载文件
+
+**接口描述：** 根据文件ID下载具体文件
+
+**请求信息：**
+```
+GET /download/{file_id}
+```
+
+**路径参数：**
+
+| 参数名 | 类型 | 必填 | 描述 |
+|--------|------|------|------|
+| `file_id` | String | 是 | 文件唯一标识符（格式：{task_id}_{file_type}） |
+
+**响应格式：**
+- **成功时：** 返回文件二进制流
+- **Content-Type：** `application/octet-stream`
+- **Content-Disposition：** `attachment; filename="{filename}"`
+
+**状态码：**
+- `200 OK`：文件下载成功
+- `400 Bad Request`：无效的文件ID格式或不支持的文件类型
+- `404 Not Found`：任务不存在或文件不存在
+- `500 Internal Server Error`：文件访问错误
+
+**错误响应示例：**
+```json
+{
+  "detail": "无效的文件ID格式"
+}
+```
+
+---
+
+### 7. 删除任务
 
 **接口描述：** 删除指定任务及其相关文件
 
@@ -288,10 +354,9 @@ DELETE /task/{task_id}
 ### 1. 上传视频文件
 
 ```bash
-curl -X POST "http://localhost:3080/upload" \
+curl -X POST "http://localhost:3080/upload?email=user@example.com" \
   -H "Content-Type: multipart/form-data" \
-  -F "file=@example_video.mp4" \
-  -F "email=user@example.com"
+  -F "file=@example_video.mp4"
 ```
 
 **响应：**
@@ -340,11 +405,10 @@ curl -X GET "http://localhost:3080/result/550e8400-e29b-41d4-a716-446655440000" 
 async function uploadFile(file, email) {
   const formData = new FormData();
   formData.append('file', file);
-  if (email) {
-    formData.append('email', email);
-  }
   
-  const response = await fetch('http://localhost:3080/upload', {
+  const url = email ? `http://localhost:3080/upload?email=${encodeURIComponent(email)}` : 'http://localhost:3080/upload';
+  
+  const response = await fetch(url, {
     method: 'POST',
     body: formData
   });

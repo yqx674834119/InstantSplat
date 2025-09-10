@@ -74,3 +74,6 @@ echo ""
 
 echo "开始部署后端服务"
 nohup python3 api_server.py > api_server.log 2>&1 &
+
+echo "开始使用cloudflared部署"
+nohup cloudflared tunnel  run my-service > cloudflared.log 2>&1 &

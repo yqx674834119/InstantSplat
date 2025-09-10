@@ -10,6 +10,7 @@ import asyncio
 import shutil
 import tempfile
 import zipfile
+import glob
 from pathlib import Path
 from typing import Dict, List, Optional
 from datetime import datetime
@@ -20,7 +21,7 @@ import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Depends, Request
-from fastapi.responses import JSONResponse, FileResponse
+from fastapi.responses import JSONResponse, FileResponse,StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exception_handlers import http_exception_handler
 from pydantic import BaseModel, Field, ValidationError
@@ -153,6 +154,19 @@ class ProcessingResult(BaseModel):
     result_files: List[str] = []
     processing_time: Optional[float] = None
     error_message: Optional[str] = None
+
+class FileInfo(BaseModel):
+    file_id: str = Field(..., description="文件唯一标识符")
+    filename: str = Field(..., description="文件名")
+    file_size: int = Field(..., description="文件大小（字节）")
+    file_type: str = Field(..., description="文件类型")
+    download_url: str = Field(..., description="下载链接")
+
+class ResultResponse(BaseModel):
+    task_id: str = Field(..., description="任务ID")
+    status: str = Field(..., description="任务状态")
+    files: List[FileInfo] = Field(default_factory=list, description="可下载的文件列表")
+    message: str = Field("", description="响应消息")
 
 # 使用全局任务管理器
 # task_manager 已在模块中定义
@@ -517,13 +531,88 @@ async def process_video_task(task_id: str, video_path: Path):
                 
                 # 设置任务结果数据，用于结果下载
                 ply_file_path = reconstruction_result.files.get('point_cloud', '')
-                task_manager.set_task_result(task_id, {
-                    "output_path": reconstruction_result.output_dir,
-                    "ply_file_path": ply_file_path,
-                    "files": reconstruction_result.files,
-                    "metrics": reconstruction_result.metrics,
-                    "processing_time": reconstruction_result.processing_time
-                })
+                
+                # PLY文件压缩处理
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 生成压缩文件路径
+                        compressed_ply_path = ply_file_path.replace('.ply', '.compressed.ply')
+                        
+                        # 构建压缩命令
+                        compress_cmd = [
+                            "/opt/glibc-2.38/lib/ld-linux-x86-64.so.2",
+                            "--library-path", "/opt/glibc-2.38/lib:/usr/lib/x86_64-linux-gnu",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/node",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/splat-transform",
+                            ply_file_path,
+                            compressed_ply_path
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始压缩PLY文件: {ply_file_path} -> {compressed_ply_path}")
+                        result = subprocess.run(compress_cmd, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            # 压缩成功，删除原文件并更新路径
+                            original_size = os.path.getsize(ply_file_path)
+                            compressed_size = os.path.getsize(compressed_ply_path)
+                            compression_ratio = (1 - compressed_size / original_size) * 100
+                            
+                            logger.info(f"任务 {task_id}: PLY文件压缩成功，原大小: {original_size} bytes, 压缩后: {compressed_size} bytes, 压缩率: {compression_ratio:.1f}%")
+                            
+                            # 删除原文件
+                            os.remove(ply_file_path)
+                            # 更新文件路径为压缩后的文件
+                            ply_file_path = compressed_ply_path
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件压缩失败: {result.stderr}")
+                            logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                    except Exception as compress_e:
+                        logger.error(f"任务 {task_id}: PLY文件压缩过程出错: {compress_e}")
+                        logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                
+                # 上传PLY文件到公网服务器
+                public_url = None
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 构建scp命令，将文件重命名为taskid.compressed.ply
+                        remote_filename = f"{task_id}.compressed.ply"
+                        scp_command = [
+                            "sshpass", "-p", "RAs@z4uY!n",
+                            "scp", "-o", "StrictHostKeyChecking=no",
+                            ply_file_path,
+                            f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始上传PLY文件到公网服务器: {remote_filename}")
+                        result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            public_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
+                            logger.info(f"任务 {task_id}: PLY文件上传成功，公网URL: {public_url}")
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件上传失败 - {result.stderr}")
+                    except subprocess.TimeoutExpired:
+                        logger.error(f"任务 {task_id}: PLY文件上传超时")
+                    except Exception as e:
+                        logger.error(f"任务 {task_id}: PLY文件上传异常 - {str(e)}")
+                
+                # 如果上传失败，设置默认公网URL为None，但仍然标记任务为完成
+                if not public_url:
+                    logger.warning(f"任务 {task_id}: PLY文件上传失败，但任务仍标记为完成")
+                
+                # 确保public_url存在才设置任务结果
+                if public_url:
+                    task_manager.set_task_result(task_id, {
+                        "output_path": reconstruction_result.output_dir,
+                        "ply_file_path": ply_file_path,
+                        "public_url": public_url,  # 添加公网URL
+                        "files": reconstruction_result.files,
+                        "metrics": reconstruction_result.metrics,
+                        "processing_time": reconstruction_result.processing_time
+                    })
+                else:
+                    # 如果没有公网URL，任务标记为失败
+                    raise Exception("PLY文件上传到公网服务器失败")
                 
                 logger.info(f"任务 {task_id}: 三维重建完成，输出目录: {reconstruction_result.output_dir}")
                 
@@ -531,9 +620,6 @@ async def process_video_task(task_id: str, video_path: Path):
                 task = task_manager.get_task(task_id)
                 if task and task.input_data.get('email'):
                     try:
-                        # 构建下载URL（如果需要）
-                        download_url = f"/result/{task_id}"  # 相对URL，前端可以构建完整URL
-                        
                         # 使用Supabase邮件通知器发送完成通知
                         # 创建新的事件循环任务来处理异步邮件发送
                         loop = asyncio.get_event_loop()
@@ -542,7 +628,7 @@ async def process_video_task(task_id: str, video_path: Path):
                             task_id=task_id,
                             success=True,
                             processing_time=reconstruction_result.processing_time,
-                            download_url=download_url
+                            public_url=public_url  # 传递公网URL而不是相对路径
                         ))
                         # 等待邮件发送完成，但设置超时
                         await asyncio.wait_for(email_task, timeout=60.0)
@@ -672,13 +758,88 @@ async def process_image_task(task_id: str, image_path: Path):
                 
                 # 设置任务结果数据，用于结果下载
                 ply_file_path = reconstruction_result.files.get('point_cloud', '')
-                task_manager.set_task_result(task_id, {
-                    "output_path": reconstruction_result.output_dir,
-                    "ply_file_path": ply_file_path,
-                    "files": reconstruction_result.files,
-                    "metrics": reconstruction_result.metrics,
-                    "processing_time": reconstruction_result.processing_time
-                })
+                
+                # PLY文件压缩处理
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 生成压缩文件路径
+                        compressed_ply_path = ply_file_path.replace('.ply', '.compressed.ply')
+                        
+                        # 构建压缩命令
+                        compress_cmd = [
+                            "/opt/glibc-2.38/lib/ld-linux-x86-64.so.2",
+                            "--library-path", "/opt/glibc-2.38/lib:/usr/lib/x86_64-linux-gnu",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/node",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/splat-transform",
+                            ply_file_path,
+                            compressed_ply_path
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始压缩PLY文件: {ply_file_path} -> {compressed_ply_path}")
+                        result = subprocess.run(compress_cmd, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            # 压缩成功，删除原文件并更新路径
+                            original_size = os.path.getsize(ply_file_path)
+                            compressed_size = os.path.getsize(compressed_ply_path)
+                            compression_ratio = (1 - compressed_size / original_size) * 100
+                            
+                            logger.info(f"任务 {task_id}: PLY文件压缩成功，原大小: {original_size} bytes, 压缩后: {compressed_size} bytes, 压缩率: {compression_ratio:.1f}%")
+                            
+                            # 删除原文件
+                            os.remove(ply_file_path)
+                            # 更新文件路径为压缩后的文件
+                            ply_file_path = compressed_ply_path
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件压缩失败: {result.stderr}")
+                            logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                    except Exception as compress_e:
+                        logger.error(f"任务 {task_id}: PLY文件压缩过程出错: {compress_e}")
+                        logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                
+                # 上传PLY文件到公网服务器
+                public_url = None
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 构建scp命令，将文件重命名为taskid.compressed.ply
+                        remote_filename = f"{task_id}.compressed.ply"
+                        scp_command = [
+                            "sshpass", "-p", "RAs@z4uY!n",
+                            "scp", "-o", "StrictHostKeyChecking=no",
+                            ply_file_path,
+                            f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始上传PLY文件到公网服务器: {remote_filename}")
+                        result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            public_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
+                            logger.info(f"任务 {task_id}: PLY文件上传成功，公网URL: {public_url}")
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件上传失败 - {result.stderr}")
+                    except subprocess.TimeoutExpired:
+                        logger.error(f"任务 {task_id}: PLY文件上传超时")
+                    except Exception as e:
+                        logger.error(f"任务 {task_id}: PLY文件上传异常 - {str(e)}")
+                
+                # 如果上传失败，设置默认公网URL为None，但仍然标记任务为完成
+                if not public_url:
+                    logger.warning(f"任务 {task_id}: PLY文件上传失败，但任务仍标记为完成")
+                
+                # 确保public_url存在才设置任务结果
+                if public_url:
+                    task_manager.set_task_result(task_id, {
+                        "output_path": reconstruction_result.output_dir,
+                        "ply_file_path": ply_file_path,
+                        "public_url": public_url,  # 添加公网URL
+                        "files": reconstruction_result.files,
+                        "metrics": reconstruction_result.metrics,
+                        "processing_time": reconstruction_result.processing_time
+                    })
+                else:
+                    # 如果没有公网URL，任务标记为失败
+                    raise Exception("PLY文件上传到公网服务器失败")
                 
                 logger.info(f"任务 {task_id}: 三维重建完成，输出目录: {reconstruction_result.output_dir}")
                 
@@ -691,8 +852,7 @@ async def process_image_task(task_id: str, image_path: Path):
                     logger.info(f"任务 {task_id}: 邮箱地址: {email}")
                 if task and task.input_data.get('email'):
                     try:
-                        # 构建下载URL
-                        download_url = f"/result/{task_id}"
+                        # 构建下载URL                        
                         logger.info(f"任务 {task_id}: 开始发送邮件通知到 {task.input_data.get('email')}")
                         
                         # 创建新的事件循环任务来处理异步邮件发送
@@ -702,7 +862,7 @@ async def process_image_task(task_id: str, image_path: Path):
                             task_id=task_id,
                             success=True,
                             processing_time=reconstruction_result.processing_time,
-                            download_url=download_url
+                            public_url=public_url
                         ))
                         # 等待邮件发送完成，但设置超时
                         await asyncio.wait_for(email_task, timeout=60.0)
@@ -836,13 +996,88 @@ async def process_multi_image_task(task_id: str, n_images: int):
                 
                 # 设置任务结果数据，用于结果下载
                 ply_file_path = reconstruction_result.files.get('point_cloud', '')
-                task_manager.set_task_result(task_id, {
-                    "output_path": reconstruction_result.output_dir,
-                    "ply_file_path": ply_file_path,
-                    "files": reconstruction_result.files,
-                    "metrics": reconstruction_result.metrics,
-                    "processing_time": reconstruction_result.processing_time
-                })
+
+                # PLY文件压缩处理
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 生成压缩文件路径
+                        compressed_ply_path = ply_file_path.replace('.ply', '.compressed.ply')
+                        
+                        # 构建压缩命令
+                        compress_cmd = [
+                            "/opt/glibc-2.38/lib/ld-linux-x86-64.so.2",
+                            "--library-path", "/opt/glibc-2.38/lib:/usr/lib/x86_64-linux-gnu",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/node",
+                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/splat-transform",
+                            ply_file_path,
+                            compressed_ply_path
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始压缩PLY文件: {ply_file_path} -> {compressed_ply_path}")
+                        result = subprocess.run(compress_cmd, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            # 压缩成功，删除原文件并更新路径
+                            original_size = os.path.getsize(ply_file_path)
+                            compressed_size = os.path.getsize(compressed_ply_path)
+                            compression_ratio = (1 - compressed_size / original_size) * 100
+                            
+                            logger.info(f"任务 {task_id}: PLY文件压缩成功，原大小: {original_size} bytes, 压缩后: {compressed_size} bytes, 压缩率: {compression_ratio:.1f}%")
+                            
+                            # 删除原文件
+                            os.remove(ply_file_path)
+                            # 更新文件路径为压缩后的文件
+                            ply_file_path = compressed_ply_path
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件压缩失败: {result.stderr}")
+                            logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                    except Exception as compress_e:
+                        logger.error(f"任务 {task_id}: PLY文件压缩过程出错: {compress_e}")
+                        logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
+                
+                # 上传PLY文件到公网服务器
+                public_url = None
+                if ply_file_path and os.path.exists(ply_file_path):
+                    try:
+                        # 构建scp命令，将文件重命名为taskid.compressed.ply
+                        remote_filename = f"{task_id}.compressed.ply"
+                        scp_command = [
+                            "sshpass", "-p", "RAs@z4uY!n",
+                            "scp", "-o", "StrictHostKeyChecking=no",
+                            ply_file_path,
+                            f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
+                        ]
+                        
+                        logger.info(f"任务 {task_id}: 开始上传PLY文件到公网服务器: {remote_filename}")
+                        result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
+                        
+                        if result.returncode == 0:
+                            public_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
+                            logger.info(f"任务 {task_id}: PLY文件上传成功，公网URL: {public_url}")
+                        else:
+                            logger.error(f"任务 {task_id}: PLY文件上传失败 - {result.stderr}")
+                    except subprocess.TimeoutExpired:
+                        logger.error(f"任务 {task_id}: PLY文件上传超时")
+                    except Exception as e:
+                        logger.error(f"任务 {task_id}: PLY文件上传异常 - {str(e)}")
+                
+                # 如果上传失败，设置默认公网URL为None，但仍然标记任务为完成
+                if not public_url:
+                    logger.warning(f"任务 {task_id}: PLY文件上传失败，但任务仍标记为完成")
+                
+                # 确保public_url存在才设置任务结果
+                if public_url:
+                    task_manager.set_task_result(task_id, {
+                        "output_path": reconstruction_result.output_dir,
+                        "ply_file_path": ply_file_path,
+                        "public_url": public_url,  # 添加公网URL
+                        "files": reconstruction_result.files,
+                        "metrics": reconstruction_result.metrics,
+                        "processing_time": reconstruction_result.processing_time
+                    })
+                else:
+                    # 如果没有公网URL，任务标记为失败
+                    raise Exception("PLY文件上传到公网服务器失败")
                 
                 logger.info(f"任务 {task_id}: 多图像三维重建完成，输出目录: {reconstruction_result.output_dir}")
                 
@@ -855,7 +1090,7 @@ async def process_multi_image_task(task_id: str, n_images: int):
                         # 构建下载URL
                         logger.info(f"开始发送邮件 - 任务 {task_id} keys: {task.input_data.keys()}")
 
-                        download_url = f"/result/{task_id}"
+                        
                         
                         # 使用Supabase邮件通知器发送完成通知
                         await send_training_completion_email(
@@ -863,7 +1098,7 @@ async def process_multi_image_task(task_id: str, n_images: int):
                             task_id=task_id,
                             success=True,
                             processing_time=reconstruction_result.processing_time,
-                            download_url=download_url
+                            public_url=public_url
                         )
                         logger.info(f"任务 {task_id}: 邮件通知发送成功")
                     except Exception as email_e:
@@ -958,9 +1193,9 @@ async def list_all_tasks():
         } for task in tasks
     ]}
 
-@app.get("/result/{task_id}", summary="下载处理结果")
-async def download_result(task_id: str):
-    """下载任务处理结果"""
+@app.get("/result/{task_id}", response_model=ResultResponse, summary="获取处理结果信息")
+async def get_result_info(task_id: str):
+    """获取任务处理结果的文件信息和下载链接"""
     task = task_manager.get_task(task_id)
     if not task:
         raise HTTPException(status_code=404, detail="任务不存在")
@@ -968,21 +1203,29 @@ async def download_result(task_id: str):
     if task.status != TMTaskStatus.COMPLETED:
         raise HTTPException(status_code=400, detail="任务尚未完成")
     
-    if not task.result_data or not task.result_data.get('ply_file_path'):
-        raise HTTPException(status_code=404, detail="结果文件不存在")
+    if not task.result_data:
+        raise HTTPException(status_code=404, detail="结果路径不存在")
+    
+    # 任务完成后直接返回公网URL
+    public_url = task.result_data.get('public_url')
+    if public_url:
+        file_info = FileInfo(
+            file_id=f"{task_id}_point_cloud",
+            filename=f"{task_id}.ply",
+            file_size=0,  # 公网文件大小暂时设为0
+            file_type="application/octet-stream",
+            download_url=config.VIEWER_URL+"content="+public_url  # 直接使用公网URL
+        )
         
-    ply_file_path = Path(task.result_data['ply_file_path'])
-    if not ply_file_path.exists():
-        raise HTTPException(status_code=404, detail="结果文件不存在")
+        return ResultResponse(
+            task_id=task_id,
+            status=task.status.value,
+            files=[file_info],
+            message="结果文件已上传到公网服务器"
+        )
     
-    if not ply_file_path.is_file():
-        raise HTTPException(status_code=500, detail=f"File at path {ply_file_path} is not a file.")
-    
-    return FileResponse(
-        path=str(ply_file_path),
-        filename=f"point_cloud_{task_id}.ply",
-        media_type="application/octet-stream"
-    )
+    # 如果没有公网URL，说明上传失败，返回错误
+    raise HTTPException(status_code=500, detail="PLY文件上传到公网服务器失败")
 
 @app.delete("/task/{task_id}", summary="删除任务")
 async def delete_task(task_id: str):

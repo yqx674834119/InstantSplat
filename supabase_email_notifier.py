@@ -120,12 +120,12 @@ class SupabaseEmailNotifier:
             logger.error(f"邮件发送异常: {str(e)}")
             return False
     
-    async def send_training_completion_notification(self, 
-                                                  email: str, 
+    async def send_training_completion_notification(self,
+                                                  email: str,
                                                   task_id: str,
                                                   success: bool = True,
                                                   processing_time: float = None,
-                                                  download_url: str = None,
+                                                  public_url: str = None,
                                                   error_message: str = None) -> bool:
         """发送训练完成通知
         
@@ -134,7 +134,7 @@ class SupabaseEmailNotifier:
             task_id: 任务ID
             success: 是否成功
             processing_time: 处理时间(秒)
-            download_url: 下载链接
+            public_url: 公网下载链接
             error_message: 错误信息(如果失败)
             
         Returns:
@@ -159,7 +159,7 @@ class SupabaseEmailNotifier:
             
             additional_data = {
                 "processing_time": processing_time,
-                "download_url": download_url,
+                "public_url": public_url,
                 "result_type": "ply_file"
             }
             
@@ -246,7 +246,7 @@ async def send_training_completion_email(email: str,
                                        task_id: str,
                                        success: bool = True,
                                        processing_time: float = None,
-                                       download_url: str = None,
+                                       public_url: str = None,
                                        error_message: str = None) -> bool:
     """发送训练完成邮件的便捷函数"""
     notifier = get_email_notifier()
@@ -255,7 +255,7 @@ async def send_training_completion_email(email: str,
         task_id=task_id,
         success=success,
         processing_time=processing_time,
-        download_url=download_url,
+        public_url=public_url,
         error_message=error_message
     )
 

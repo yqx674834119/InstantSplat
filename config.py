@@ -16,7 +16,7 @@ class APIConfig:
     OUTPUT_DIR = BASE_DIR / "output_api"
     TEMP_DIR = BASE_DIR / "temp"
     LOG_DIR = BASE_DIR / "logs"
-    
+    VIEWER_URL="https://viewer.scenegen.cn/?"
     # InstantSplat标准目录结构
     ASSETS_DIR = BASE_DIR / "assets"  # DATA_ROOT_DIR
     DATASET_NAME = "api_uploads"      # 统一的数据集名称

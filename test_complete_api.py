@@ -313,7 +313,7 @@ class APITester:
             logger.warning(f"测试视频文件不可用: {e}")
         
         # 4. 文件上传测试
-        task_id = self.test_file_upload(video_file)
+        task_id = self.test_file_upload(zip_file)
         if not task_id:
             logger.error("文件上传失败，停止测试")
             return self.generate_test_report()
