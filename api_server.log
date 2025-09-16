@@ -4220,3 +4220,764 @@ INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'E
 INFO:api_server:任务 49e18291-9f25-4049-afec-30ad5599c5a7: 邮件通知发送成功
 INFO:ReconstructionProcessor:Rendering completed successfully
 INFO:ReconstructionProcessor:Async rendering task completed
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含16张图像
+INFO:api_server:生成任务ID: 03502251-449b-4971-9cc5-026c2448f244
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244/temp_scan_images.zip
+INFO:api_server:成功提取16张图像到/home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244/images
+INFO:task_manager:创建任务: 03502251-449b-4971-9cc5-026c2448f244, 类型: image_reconstruction
+INFO:api_server:任务创建成功: 03502251-449b-4971-9cc5-026c2448f244
+INFO:     183.234.63.37:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 03502251-449b-4971-9cc5-026c2448f244: 16张图像
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 03502251-449b-4971-9cc5-026c2448f244 状态更新为: extracting
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244，包含16张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244 -m /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views --n_views 16 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/01_init_geo.log
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244 -m /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views -r 1 --n_views 16 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/02_train.log
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: binjiang@hkust-gz.edu.cn
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含3张图像
+INFO:api_server:生成任务ID: e7527e73-f2ac-4f1d-b3bd-82da98fb7041
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/temp_scan_images.zip
+INFO:api_server:成功提取3张图像到/home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/images
+INFO:task_manager:创建任务: e7527e73-f2ac-4f1d-b3bd-82da98fb7041, 类型: image_reconstruction
+INFO:api_server:任务创建成功: e7527e73-f2ac-4f1d-b3bd-82da98fb7041
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "POST /upload?email=binjiang%40hkust-gz.edu.cn HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 3张图像
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041 状态更新为: extracting
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041，包含3张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 -m /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views --n_views 3 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/01_init_geo.log
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 -m /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views -r 1 --n_views 3 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/02_train.log
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     2408:8656:a52:c6:9151:53f3:8f74:a051:0 - "GET /status/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041 -m /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views -r 1 --n_views 3 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/03_render.log
+INFO:task_manager:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041 状态更新为: completed
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: PLY文件压缩成功，原大小: 105229419 bytes, 压缩后: 26003834 bytes, 压缩率: 75.3%
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 开始上传PLY文件到公网服务器: e7527e73-f2ac-4f1d-b3bd-82da98fb7041.compressed.ply
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/e7527e73-f2ac-4f1d-b3bd-82da98fb7041.compressed.ply
+INFO:task_manager:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041 结果已设置
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:发送邮件通知到: binjiang@hkust-gz.edu.cn, 主题: SceneGEN训练完成 - 任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': '6cfb38d2-f65b-4879-bfbd-8cecdea389a4'}
+INFO:api_server:任务 e7527e73-f2ac-4f1d-b3bd-82da98fb7041: 邮件通知发送成功
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/03502251-449b-4971-9cc5-026c2448f244 -m /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views -r 1 --n_views 16 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/03_render.log
+INFO:task_manager:任务 03502251-449b-4971-9cc5-026c2448f244 状态更新为: completed
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views/point_cloud/iteration_500/point_cloud.compressed.ply
+ERROR:ReconstructionProcessor:Rendering failed. Log content:  args.skip_test, args)
+  File "/home/livablecity/InstantSplat/./render.py", line 200, in render_sets
+    scene = Scene(dataset, gaussians, load_iteration=iteration, opt=args, shuffle=False)
+  File "/home/livablecity/InstantSplat/scene/__init__.py", line 82, in __init__
+    self.gaussians.load_ply(os.path.join(self.model_path,
+  File "/home/livablecity/InstantSplat/scene/gaussian_model.py", line 286, in load_ply
+    plydata = PlyData.read(path)
+  File "/home/livablecity/miniconda3/envs/instantsplat/lib/python3.10/site-packages/plyfile.py", line 157, in read
+    (must_close, stream) = _open_stream(stream, 'read')
+  File "/home/livablecity/miniconda3/envs/instantsplat/lib/python3.10/site-packages/plyfile.py", line 1347, in _open_stream
+    return (True, open(stream, read_or_write[0] + 'b'))
+FileNotFoundError: [Errno 2] No such file or directory: '/home/livablecity/InstantSplat/output_infer/api_uploads/e7527e73-f2ac-4f1d-b3bd-82da98fb7041/3_views/point_cloud/iteration_500/point_cloud.ply'
+
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: PLY文件压缩成功，原大小: 531073692 bytes, 压缩后: 131230694 bytes, 压缩率: 75.3%
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: 开始上传PLY文件到公网服务器: 03502251-449b-4971-9cc5-026c2448f244.compressed.ply
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/03502251-449b-4971-9cc5-026c2448f244.compressed.ply
+INFO:task_manager:任务 03502251-449b-4971-9cc5-026c2448f244 结果已设置
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/03502251-449b-4971-9cc5-026c2448f244/16_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 03502251-449b-4971-9cc5-026c2448f244 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 03502251-449b-4971-9cc5-026c2448f244
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:     183.234.63.37:0 - "GET /status/03502251-449b-4971-9cc5-026c2448f244 HTTP/1.1" 200 OK
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': 'f9838239-1fbe-4fad-b56e-2ab7fb4c3ad5'}
+INFO:api_server:任务 03502251-449b-4971-9cc5-026c2448f244: 邮件通知发送成功
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed
+WARNING:  StatReload detected changes in 'config.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [16727]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [58848]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含16张图像
+INFO:api_server:生成任务ID: 394c6706-d6ab-4ffb-8fe3-06fc60b30f79
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/temp_scan_images.zip
+INFO:api_server:成功提取16张图像到/home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/images
+INFO:task_manager:创建任务: 394c6706-d6ab-4ffb-8fe3-06fc60b30f79, 类型: image_reconstruction
+INFO:api_server:任务创建成功: 394c6706-d6ab-4ffb-8fe3-06fc60b30f79
+INFO:     183.234.63.37:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 16张图像
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79 状态更新为: extracting
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79，包含16张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79 -m /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views --n_views 16 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/01_init_geo.log
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79 -m /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views -r 1 --n_views 16 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/02_train.log
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79 -m /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views -r 1 --n_views 16 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/03_render.log
+INFO:task_manager:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79 状态更新为: completed
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: PLY文件压缩成功，原大小: 563035436 bytes, 压缩后: 139128540 bytes, 压缩率: 75.3%
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 开始上传PLY文件到公网服务器: 394c6706-d6ab-4ffb-8fe3-06fc60b30f79.compressed.ply
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/394c6706-d6ab-4ffb-8fe3-06fc60b30f79.compressed.ply
+INFO:task_manager:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79 结果已设置
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/394c6706-d6ab-4ffb-8fe3-06fc60b30f79/16_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:Supabase邮件通知器初始化完成: https://hmcmyrfvdmrnrbgyvjhx.supabase.co/functions/v1/send-notification-email
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': '6ecacd2e-e720-41e6-9f48-3636525bd8f8'}
+INFO:api_server:任务 394c6706-d6ab-4ffb-8fe3-06fc60b30f79: 邮件通知发送成功
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:     183.234.63.37:0 - "GET /status/394c6706-d6ab-4ffb-8fe3-06fc60b30f79 HTTP/1.1" 200 OK
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: None
+INFO:api_server:email参数类型: <class 'NoneType'>, 是否为None: True
+INFO:api_server:zip文件验证成功，包含5张图像
+INFO:api_server:生成任务ID: 050cf697-3fc3-49c5-bb86-debb9cacc273
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/temp_scan_images.zip
+INFO:api_server:成功提取5张图像到/home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/images
+INFO:task_manager:创建任务: 050cf697-3fc3-49c5-bb86-debb9cacc273, 类型: image_reconstruction
+INFO:api_server:任务创建成功: 050cf697-3fc3-49c5-bb86-debb9cacc273
+INFO:     218.107.35.218:0 - "POST /upload HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 050cf697-3fc3-49c5-bb86-debb9cacc273: 5张图像
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 050cf697-3fc3-49c5-bb86-debb9cacc273 状态更新为: extracting
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273，包含5张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273 -m /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views --n_views 5 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/01_init_geo.log
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273 -m /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views -r 1 --n_views 5 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/02_train.log
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273 -m /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views -r 1 --n_views 5 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/03_render.log
+INFO:task_manager:任务 050cf697-3fc3-49c5-bb86-debb9cacc273 状态更新为: completed
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: PLY文件压缩成功，原大小: 127527595 bytes, 压缩后: 31513738 bytes, 压缩率: 75.3%
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: 开始上传PLY文件到公网服务器: 050cf697-3fc3-49c5-bb86-debb9cacc273.compressed.ply
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/050cf697-3fc3-49c5-bb86-debb9cacc273.compressed.ply
+INFO:task_manager:任务 050cf697-3fc3-49c5-bb86-debb9cacc273 结果已设置
+INFO:api_server:任务 050cf697-3fc3-49c5-bb86-debb9cacc273: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:True keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+INFO:     218.107.35.218:0 - "GET /status/050cf697-3fc3-49c5-bb86-debb9cacc273 HTTP/1.1" 200 OK
+ERROR:ReconstructionProcessor:Rendering failed. Log content:  args.skip_test, args)
+  File "/home/livablecity/InstantSplat/./render.py", line 200, in render_sets
+    scene = Scene(dataset, gaussians, load_iteration=iteration, opt=args, shuffle=False)
+  File "/home/livablecity/InstantSplat/scene/__init__.py", line 82, in __init__
+    self.gaussians.load_ply(os.path.join(self.model_path,
+  File "/home/livablecity/InstantSplat/scene/gaussian_model.py", line 286, in load_ply
+    plydata = PlyData.read(path)
+  File "/home/livablecity/miniconda3/envs/instantsplat/lib/python3.10/site-packages/plyfile.py", line 157, in read
+    (must_close, stream) = _open_stream(stream, 'read')
+  File "/home/livablecity/miniconda3/envs/instantsplat/lib/python3.10/site-packages/plyfile.py", line 1347, in _open_stream
+    return (True, open(stream, read_or_write[0] + 'b'))
+FileNotFoundError: [Errno 2] No such file or directory: '/home/livablecity/InstantSplat/output_infer/api_uploads/050cf697-3fc3-49c5-bb86-debb9cacc273/5_views/point_cloud/iteration_500/point_cloud.ply'
+
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:     127.0.0.1:34812 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34818 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34834 - "GET /tasks HTTP/1.1" 200 OK
+WARNING:  StatReload detected changes in 'test_complete_api.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [58848]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [12545]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:39574 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39588 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39598 - "GET /tasks HTTP/1.1" 200 OK
+INFO:api_server:收到文件上传请求: test_images_complete.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含8张图像
+INFO:api_server:生成任务ID: 5e1c47a3-08a3-4d76-934b-5718c2892abf
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/temp_test_images_complete.zip
+INFO:api_server:成功提取8张图像到/home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/images
+INFO:task_manager:创建任务: 5e1c47a3-08a3-4d76-934b-5718c2892abf, 类型: image_reconstruction
+INFO:api_server:任务创建成功: 5e1c47a3-08a3-4d76-934b-5718c2892abf
+INFO:     127.0.0.1:39614 - "POST /upload?email=674834119@qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 8张图像
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf 状态更新为: extracting
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf，包含8张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf -m /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views --n_views 8 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/01_init_geo.log
+INFO:     127.0.0.1:39616 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34848 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38604 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34062 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58208 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf -m /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views -r 1 --n_views 8 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/02_train.log
+INFO:     127.0.0.1:54784 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58080 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43936 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48342 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55764 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41556 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39326 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53734 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:38824 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54316 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51522 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42130 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45266 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39842 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44116 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34596 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45672 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59592 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46398 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35436 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51436 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39276 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43732 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:36210 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39010 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41292 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59524 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35038 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:55922 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:42300 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45752 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59708 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51146 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40838 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44250 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56548 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47158 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45870 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51518 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40006 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47942 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:40478 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56938 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:52252 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:43008 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33034 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39888 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53490 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53428 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48412 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56116 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53580 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:44998 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:37912 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:46020 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf -m /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views -r 1 --n_views 8 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/03_render.log
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:task_manager:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf 状态更新为: completed
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: PLY文件压缩成功，原大小: 365189716 bytes, 压缩后: 90240523 bytes, 压缩率: 75.3%
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 开始上传PLY文件到公网服务器: 5e1c47a3-08a3-4d76-934b-5718c2892abf.compressed.ply
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/5e1c47a3-08a3-4d76-934b-5718c2892abf.compressed.ply
+INFO:task_manager:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf 结果已设置
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 5e1c47a3-08a3-4d76-934b-5718c2892abf keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:Supabase邮件通知器初始化完成: https://hmcmyrfvdmrnrbgyvjhx.supabase.co/functions/v1/send-notification-email
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 5e1c47a3-08a3-4d76-934b-5718c2892abf
+INFO:     127.0.0.1:35938 - "GET /status/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45422 - "GET /result/5e1c47a3-08a3-4d76-934b-5718c2892abf HTTP/1.1" 200 OK
+INFO:     127.0.0.1:45432 - "GET /tasks HTTP/1.1" 200 OK
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': '9994fdbe-ff49-47f2-8f2e-a9f107f00abd'}
+INFO:api_server:任务 5e1c47a3-08a3-4d76-934b-5718c2892abf: 邮件通知发送成功
+WARNING:  StatReload detected changes in 'config.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [12545]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [45254]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'config.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [45254]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [45653]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:54160 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54168 - "GET / HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54182 - "GET /tasks HTTP/1.1" 200 OK
+INFO:api_server:收到文件上传请求: test_images_complete.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含8张图像
+INFO:api_server:生成任务ID: f1361e1e-b562-49df-a123-b2a38b4b5580
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/temp_test_images_complete.zip
+INFO:api_server:成功提取8张图像到/home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/images
+INFO:task_manager:创建任务: f1361e1e-b562-49df-a123-b2a38b4b5580, 类型: image_reconstruction
+INFO:api_server:任务创建成功: f1361e1e-b562-49df-a123-b2a38b4b5580
+INFO:     127.0.0.1:54198 - "POST /upload?email=674834119@qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 f1361e1e-b562-49df-a123-b2a38b4b5580: 8张图像
+INFO:api_server:任务 f1361e1e-b562-49df-a123-b2a38b4b5580 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 f1361e1e-b562-49df-a123-b2a38b4b5580 状态更新为: extracting
+INFO:api_server:任务 f1361e1e-b562-49df-a123-b2a38b4b5580: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580，包含8张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:     127.0.0.1:54202 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580 -m /home/livablecity/InstantSplat/output_infer/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/8_views --n_views 8 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/8_views/01_init_geo.log
+INFO:     127.0.0.1:41676 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58924 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33100 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:48966 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53250 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54602 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:39976 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:59082 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:50994 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:35640 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33200 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:53328 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:56464 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:47632 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580 -m /home/livablecity/InstantSplat/output_infer/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/8_views -r 1 --n_views 8 --iterations 1500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/f1361e1e-b562-49df-a123-b2a38b4b5580/8_views/02_train.log
+INFO:     127.0.0.1:34720 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:41046 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:58018 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+INFO:     127.0.0.1:51292 - "GET /status/f1361e1e-b562-49df-a123-b2a38b4b5580 HTTP/1.1" 200 OK
+ERROR:ReconstructionProcessor:Training timed out
+ERROR:ReconstructionProcessor:Reconstruction failed: Training failed
+ERROR:api_server:多图像三维重建失败 f1361e1e-b562-49df-a123-b2a38b4b5580: Training failed
+ERROR:api_server:多图像任务处理失败 f1361e1e-b562-49df-a123-b2a38b4b5580: 多图像三维重建处理失败: Training failed
+ERROR:api_server:异常详情: Traceback (most recent call last):
+  File "/home/livablecity/InstantSplat/api_server.py", line 1107, in process_multi_image_task
+    raise Exception(reconstruction_result.error_message or "多图像三维重建失败")
+Exception: Training failed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/livablecity/InstantSplat/api_server.py", line 1111, in process_multi_image_task
+    raise Exception(f"多图像三维重建处理失败: {e}")
+Exception: 多图像三维重建处理失败: Training failed
+
+INFO:task_manager:任务 f1361e1e-b562-49df-a123-b2a38b4b5580 状态更新为: failed
+INFO:supabase_email_notifier:Supabase邮件通知器初始化完成: https://hmcmyrfvdmrnrbgyvjhx.supabase.co/functions/v1/send-notification-email
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练失败 - 任务 f1361e1e-b562-49df-a123-b2a38b4b5580
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': '582d968e-0ecd-43db-b129-8675c988b851'}
+WARNING:  StatReload detected changes in 'config.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [45653]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [20830]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+WARNING:  StatReload detected changes in 'config.py'. Reloading...
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [20830]
+INFO:task_manager:启动任务清理线程，清理间隔: 3600秒
+INFO:supabase_email_notifier:已加载环境变量文件: .env.supabase
+INFO:     Started server process [20914]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     47.237.176.191:0 - "GET / HTTP/1.1" 200 OK
+INFO:     47.237.176.191:0 - "GET /robots.txt HTTP/1.1" 404 Not Found
+INFO:     47.237.176.191:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     47.237.176.191:0 - "GET /sitemap.xml HTTP/1.1" 404 Not Found
+INFO:     47.237.161.4:0 - "GET / HTTP/1.1" 200 OK
+INFO:     47.237.161.4:0 - "GET /sitemap.xml HTTP/1.1" 404 Not Found
+INFO:     47.237.161.4:0 - "GET /favicon.ico HTTP/1.1" 404 Not Found
+INFO:     47.237.161.4:0 - "GET /robots.txt HTTP/1.1" 404 Not Found
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含11张图像
+INFO:api_server:生成任务ID: 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/temp_scan_images.zip
+INFO:api_server:成功提取11张图像到/home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/images
+INFO:task_manager:创建任务: 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a, 类型: image_reconstruction
+INFO:api_server:任务创建成功: 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a
+INFO:     183.24.41.215:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 11张图像
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a 状态更新为: extracting
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a，包含11张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a -m /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views --n_views 11 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/01_init_geo.log
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a -m /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views -r 1 --n_views 11 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/02_train.log
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a -m /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views -r 1 --n_views 11 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/03_render.log
+INFO:task_manager:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a 状态更新为: completed
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: PLY文件压缩成功，原大小: 334467724 bytes, 压缩后: 82649056 bytes, 压缩率: 75.3%
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 开始上传PLY文件到公网服务器: 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a.compressed.ply
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a.compressed.ply
+INFO:task_manager:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a 结果已设置
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a/11_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:Supabase邮件通知器初始化完成: https://hmcmyrfvdmrnrbgyvjhx.supabase.co/functions/v1/send-notification-email
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': 'd27ad22a-b435-46e9-9448-44c5eed1e58e'}
+INFO:api_server:任务 3e558ed3-3c3d-4ba0-b11c-2cdfc9ce378a: 邮件通知发送成功
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含11张图像
+INFO:api_server:生成任务ID: c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/temp_scan_images.zip
+INFO:api_server:成功提取11张图像到/home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/images
+INFO:task_manager:创建任务: c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a, 类型: image_reconstruction
+INFO:api_server:任务创建成功: c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a
+INFO:     183.24.41.215:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 11张图像
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a 状态更新为: extracting
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a，包含11张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a -m /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views --n_views 11 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/01_init_geo.log
+INFO:     183.24.41.215:0 - "GET /status/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a -m /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views -r 1 --n_views 11 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/02_train.log
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a -m /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views -r 1 --n_views 11 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/03_render.log
+INFO:task_manager:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a 状态更新为: completed
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: PLY文件压缩成功，原大小: 334467724 bytes, 压缩后: 82649056 bytes, 压缩率: 75.3%
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 开始上传PLY文件到公网服务器: c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a.compressed.ply
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a.compressed.ply
+INFO:task_manager:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a 结果已设置
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a/11_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': 'c2a3503b-7586-4b0d-86ed-8510878cbbc2'}
+INFO:api_server:任务 c6bfa1ab-ee5f-4e3b-b0c7-58a4fef46e8a: 邮件通知发送成功
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含11张图像
+INFO:api_server:生成任务ID: f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/temp_scan_images.zip
+INFO:api_server:成功提取11张图像到/home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/images
+INFO:task_manager:创建任务: f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22, 类型: image_reconstruction
+INFO:api_server:任务创建成功: f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22
+INFO:     183.24.41.215:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 11张图像
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 状态更新为: extracting
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22，包含11张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 -m /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views --n_views 11 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/01_init_geo.log
+INFO:     183.24.41.215:0 - "GET /status/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 -m /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views -r 1 --n_views 11 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/02_train.log
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 -m /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views -r 1 --n_views 11 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/03_render.log
+INFO:task_manager:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 状态更新为: completed
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: PLY文件压缩成功，原大小: 331244716 bytes, 压缩后: 81852628 bytes, 压缩率: 75.3%
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 开始上传PLY文件到公网服务器: f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22.compressed.ply
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22.compressed.ply
+INFO:task_manager:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 结果已设置
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22/11_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': 'd508ac41-ce20-4aa2-bd64-0cade0aaa16b'}
+INFO:api_server:任务 f37f7bf3-bd8f-40de-a0eb-fb6d24eeab22: 邮件通知发送成功
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed
+INFO:api_server:收到文件上传请求: scan_images.zip, email参数: 674834119@qq.com
+INFO:api_server:email参数类型: <class 'str'>, 是否为None: False
+INFO:api_server:zip文件验证成功，包含11张图像
+INFO:api_server:生成任务ID: cb8a5a8a-aa1a-458c-b601-8961c9ba1875
+INFO:api_server:创建标准目录结构: /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875
+INFO:api_server:zip文件保存成功: /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/temp_scan_images.zip
+INFO:api_server:成功提取11张图像到/home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/images
+INFO:task_manager:创建任务: cb8a5a8a-aa1a-458c-b601-8961c9ba1875, 类型: image_reconstruction
+INFO:api_server:任务创建成功: cb8a5a8a-aa1a-458c-b601-8961c9ba1875
+INFO:     183.24.41.215:0 - "POST /upload?email=674834119%40qq.com HTTP/1.1" 200 OK
+INFO:api_server:开始处理多图像重建任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 11张图像
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:task_manager:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875 状态更新为: extracting
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 使用场景路径 /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875，包含11张图像
+INFO:ReconstructionProcessor:Progress: 5.0% - 验证输入目录结构...
+INFO:ReconstructionProcessor:Progress: 15.0% - 执行几何初始化...
+INFO:ReconstructionProcessor:Running geometry initialization: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 -W ignore ./init_geo.py -s /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 -m /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views --n_views 11 --focal_avg --co_vis_dsp --conf_aware_ranking --infer_video
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/01_init_geo.log
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Geometry initialization completed successfully
+INFO:ReconstructionProcessor:Progress: 30.0% - 开始模型训练...
+INFO:ReconstructionProcessor:Running training: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./train.py -s /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 -m /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views -r 1 --n_views 11 --iterations 500 --pp_optimizer --optim_pose
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/02_train.log
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Training completed successfully
+INFO:ReconstructionProcessor:Progress: 85.0% - 收集训练结果...
+INFO:ReconstructionProcessor:Found ply file: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/point_cloud/iteration_500/point_cloud.ply
+INFO:ReconstructionProcessor:Collected 1 training result files
+INFO:ReconstructionProcessor:Progress: 90.0% - 启动渲染任务...
+INFO:ReconstructionProcessor:Starting async rendering task...
+INFO:ReconstructionProcessor:Async rendering thread started
+INFO:ReconstructionProcessor:Running rendering: /home/livablecity/miniconda3/envs/instantsplat/bin/python3 ./render.py -s /home/livablecity/InstantSplat/assets/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 -m /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views -r 1 --n_views 11 --iterations 500 --infer_video
+INFO:ReconstructionProcessor:Progress: 100.0% - 重建完成
+INFO:ReconstructionProcessor:Log will be saved to: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/03_render.log
+INFO:task_manager:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875 状态更新为: completed
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 开始压缩PLY文件: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/point_cloud/iteration_500/point_cloud.ply -> /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views/point_cloud/iteration_500/point_cloud.compressed.ply
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: PLY文件压缩成功，原大小: 331244716 bytes, 压缩后: 81852628 bytes, 压缩率: 75.3%
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 开始上传PLY文件到公网服务器: cb8a5a8a-aa1a-458c-b601-8961c9ba1875.compressed.ply
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: PLY文件上传成功，公网URL: https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/cb8a5a8a-aa1a-458c-b601-8961c9ba1875.compressed.ply
+INFO:task_manager:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875 结果已设置
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 多图像三维重建完成，输出目录: /home/livablecity/InstantSplat/output_infer/api_uploads/cb8a5a8a-aa1a-458c-b601-8961c9ba1875/11_views
+INFO:api_server:开始发送邮件 - 任务task is None:False- task-email is None:False keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:api_server:开始发送邮件 - 任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875 keys: dict_keys(['task_id', 'input_path', 'scene_path', 'images_path', 'filename', 'file_size', 'file_type', 'email'])
+INFO:supabase_email_notifier:发送邮件通知到: 674834119@qq.com, 主题: SceneGEN训练完成 - 任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875
+INFO:supabase_email_notifier:邮件发送成功: {'success': True, 'message': 'Email sent successfully', 'email_id': 'f30a06d2-f393-4396-88b9-b779a388aaf0'}
+INFO:api_server:任务 cb8a5a8a-aa1a-458c-b601-8961c9ba1875: 邮件通知发送成功
+INFO:     183.24.41.215:0 - "GET /status/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:     183.24.41.215:0 - "GET /result/cb8a5a8a-aa1a-458c-b601-8961c9ba1875 HTTP/1.1" 200 OK
+INFO:ReconstructionProcessor:Rendering completed successfully
+INFO:ReconstructionProcessor:Async rendering task completed

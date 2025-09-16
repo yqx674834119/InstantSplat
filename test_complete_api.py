@@ -69,7 +69,7 @@ class APITester:
             raise FileNotFoundError(f"Test_data目录不存在: {test_data_dir}")
         
         # 获取所有图像文件
-        image_files = list(test_data_dir.glob("*.jpg")) + list(test_data_dir.glob("*.png"))
+        image_files = list(test_data_dir.glob("*.jpg")) + list(test_data_dir.glob("*.png"))+ list(test_data_dir.glob("*.JPG"))
         if not image_files:
             raise FileNotFoundError("Test_data/Image目录中没有找到图像文件")
         

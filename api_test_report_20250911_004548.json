@@ -1,0 +1,1253 @@
+{
+  "summary": {
+    "total_tests": 67,
+    "passed": 67,
+    "failed": 0,
+    "success_rate": 100.0
+  },
+  "test_results": [
+    {
+      "test_name": "健康检查",
+      "success": true,
+      "message": "状态码: 200, 响应: {'message': 'InstantSplat 3D Reconstruction API is running', 'version': '1.0.0'}",
+      "timestamp": "2025-09-11T00:35:44.001149",
+      "details": {}
+    },
+    {
+      "test_name": "任务列表查询",
+      "success": true,
+      "message": "获取到 0 个任务",
+      "timestamp": "2025-09-11T00:35:44.003886",
+      "details": {
+        "tasks": []
+      }
+    },
+    {
+      "test_name": "文件上传",
+      "success": true,
+      "message": "上传成功，任务ID: 5e1c47a3-08a3-4d76-934b-5718c2892abf",
+      "timestamp": "2025-09-11T00:35:44.455575",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "response": {
+          "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+          "message": "图像上传成功，开始处理",
+          "status": "pending"
+        }
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 15.0%",
+      "timestamp": "2025-09-11T00:35:44.460382",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 15.0,
+        "current_step": "执行几何初始化...",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:35:44.457082",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 0.03701466666666667,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 15.0%",
+      "timestamp": "2025-09-11T00:35:54.472393",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 15.0,
+        "current_step": "执行几何初始化...",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:35:44.457082",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 0.03701466666666667,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 15.0%",
+      "timestamp": "2025-09-11T00:36:04.487777",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 15.0,
+        "current_step": "执行几何初始化...",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:35:44.457082",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 0.03701466666666667,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 15.0%",
+      "timestamp": "2025-09-11T00:36:14.502414",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 15.0,
+        "current_step": "执行几何初始化...",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:35:44.457082",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 0.03701466666666667,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 15.0%",
+      "timestamp": "2025-09-11T00:36:24.512568",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 15.0,
+        "current_step": "执行几何初始化...",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:35:44.457082",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 0.03701466666666667,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 30.0%",
+      "timestamp": "2025-09-11T00:36:34.520310",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 30.0,
+        "current_step": "模型训练中... (已用时: 0s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:36:30.215604",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 106.78513066666666,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 30.0%",
+      "timestamp": "2025-09-11T00:36:44.530931",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 30.0,
+        "current_step": "模型训练中... (已用时: 10s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:36:40.225647",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 130.14183466666668,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 30.0%",
+      "timestamp": "2025-09-11T00:36:54.546622",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 30.0,
+        "current_step": "模型训练中... (已用时: 20s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:36:50.235366",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 153.49786433333335,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 30.0%",
+      "timestamp": "2025-09-11T00:37:04.557874",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 30.0,
+        "current_step": "模型训练中... (已用时: 30s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:00.242360",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 176.84752166666664,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 31.0%",
+      "timestamp": "2025-09-11T00:37:14.571147",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 31.0,
+        "current_step": "模型训练中... (已用时: 40s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:10.252249",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 190.977899516129,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 31.0%",
+      "timestamp": "2025-09-11T00:37:24.586175",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 31.0,
+        "current_step": "模型训练中... (已用时: 50s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:20.258590",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 213.25010458064517,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 31.0%",
+      "timestamp": "2025-09-11T00:37:34.613201",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 31.0,
+        "current_step": "模型训练中... (已用时: 60s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:30.268994",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 235.531337516129,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 31.0%",
+      "timestamp": "2025-09-11T00:37:44.630223",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 31.0,
+        "current_step": "模型训练中... (已用时: 70s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:40.278982",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 257.81164006451615,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 32.0%",
+      "timestamp": "2025-09-11T00:37:54.648981",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 32.0,
+        "current_step": "模型训练中... (已用时: 80s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:37:50.289475",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 267.40768375,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 32.0%",
+      "timestamp": "2025-09-11T00:38:04.664696",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 32.0,
+        "current_step": "模型训练中... (已用时: 90s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:00.299872",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 288.679760375,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 32.0%",
+      "timestamp": "2025-09-11T00:38:14.679031",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 32.0,
+        "current_step": "模型训练中... (已用时: 100s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:10.309556",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 309.950307,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 33.0%",
+      "timestamp": "2025-09-11T00:38:24.694763",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 33.0,
+        "current_step": "模型训练中... (已用时: 110s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:20.320045",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 316.462232909091,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 33.0%",
+      "timestamp": "2025-09-11T00:38:34.710420",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 33.0,
+        "current_step": "模型训练中... (已用时: 120s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:30.330373",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 336.7862748181818,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 33.0%",
+      "timestamp": "2025-09-11T00:38:44.717148",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 33.0,
+        "current_step": "模型训练中... (已用时: 130s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:40.340611",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 357.11009136363634,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 33.0%",
+      "timestamp": "2025-09-11T00:38:54.732525",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 33.0,
+        "current_step": "模型训练中... (已用时: 140s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:38:50.350824",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 377.4338246666666,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 34.0%",
+      "timestamp": "2025-09-11T00:39:04.740807",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 34.0,
+        "current_step": "模型训练中... (已用时: 150s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:00.361161",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 380.2970354117647,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 34.0%",
+      "timestamp": "2025-09-11T00:39:14.751854",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 34.0,
+        "current_step": "模型训练中... (已用时: 160s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:10.370217",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 399.7263483529412,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 34.0%",
+      "timestamp": "2025-09-11T00:39:24.767023",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 34.0,
+        "current_step": "模型训练中... (已用时: 170s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:20.379017",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 419.15518570588233,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 35.0%",
+      "timestamp": "2025-09-11T00:39:34.774948",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 35.0,
+        "current_step": "模型训练中... (已用时: 180s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:30.385364",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 419.59315728571426,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 35.0%",
+      "timestamp": "2025-09-11T00:39:44.781304",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 35.0,
+        "current_step": "模型训练中... (已用时: 190s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:40.394113",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 438.18086742857145,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 35.0%",
+      "timestamp": "2025-09-11T00:39:54.798297",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 35.0,
+        "current_step": "模型训练中... (已用时: 200s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:39:50.402836",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 456.76850699999994,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 35.0%",
+      "timestamp": "2025-09-11T00:40:04.814057",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 35.0,
+        "current_step": "模型训练中... (已用时: 210s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:00.410632",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 475.354399,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 36.0%",
+      "timestamp": "2025-09-11T00:40:14.829620",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 36.0,
+        "current_step": "模型训练中... (已用时: 220s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:10.420797",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 472.8359271111111,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 36.0%",
+      "timestamp": "2025-09-11T00:40:24.845233",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 36.0,
+        "current_step": "模型训练中... (已用时: 230s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:20.431153",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 490.6321173333333,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 36.0%",
+      "timestamp": "2025-09-11T00:40:34.860792",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 36.0,
+        "current_step": "模型训练中... (已用时: 240s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:30.441567",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 508.4284391111111,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 36.0%",
+      "timestamp": "2025-09-11T00:40:44.875796",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 36.0,
+        "current_step": "模型训练中... (已用时: 250s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:40.451910",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 526.224551111111,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 37.0%",
+      "timestamp": "2025-09-11T00:40:54.891221",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 37.0,
+        "current_step": "模型训练中... (已用时: 260s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:40:50.462341",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 521.0470491081081,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 37.0%",
+      "timestamp": "2025-09-11T00:41:04.906733",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 37.0,
+        "current_step": "模型训练中... (已用时: 270s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:00.472814",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 538.0919187567567,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 37.0%",
+      "timestamp": "2025-09-11T00:41:14.923112",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 37.0,
+        "current_step": "模型训练中... (已用时: 280s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:10.483136",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 555.1364546756756,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 38.0%",
+      "timestamp": "2025-09-11T00:41:24.939091",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 38.0,
+        "current_step": "模型训练中... (已用时: 290s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:20.493604",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 548.2807396842104,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 38.0%",
+      "timestamp": "2025-09-11T00:41:34.954592",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 38.0,
+        "current_step": "模型训练中... (已用时: 300s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:30.504035",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 564.6135448947368,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 38.0%",
+      "timestamp": "2025-09-11T00:41:44.969815",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 38.0,
+        "current_step": "模型训练中... (已用时: 310s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:40.514177",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 580.9458932631578,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 38.0%",
+      "timestamp": "2025-09-11T00:41:54.985272",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 38.0,
+        "current_step": "模型训练中... (已用时: 320s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:41:50.522871",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 597.2758676842105,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 39.0%",
+      "timestamp": "2025-09-11T00:42:05.000565",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 39.0,
+        "current_step": "模型训练中... (已用时: 330s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:00.533266",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 588.2319138205128,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 39.0%",
+      "timestamp": "2025-09-11T00:42:15.015316",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 39.0,
+        "current_step": "模型训练中... (已用时: 340s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:10.539083",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 603.8820394102564,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 39.0%",
+      "timestamp": "2025-09-11T00:42:25.031552",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 39.0,
+        "current_step": "模型训练中... (已用时: 350s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:20.549168",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 619.5388421538462,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 40.0%",
+      "timestamp": "2025-09-11T00:42:35.048439",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 40.0,
+        "current_step": "模型训练中... (已用时: 360s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:30.559469",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 609.1633515,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 40.0%",
+      "timestamp": "2025-09-11T00:42:45.063992",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 40.0,
+        "current_step": "模型训练中... (已用时: 370s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:40.569304",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 624.1781025,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 40.0%",
+      "timestamp": "2025-09-11T00:42:55.079834",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 40.0,
+        "current_step": "模型训练中... (已用时: 380s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:42:50.579713",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 639.1936935,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 40.0%",
+      "timestamp": "2025-09-11T00:43:05.086220",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 40.0,
+        "current_step": "模型训练中... (已用时: 390s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:00.590131",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 654.2093444999999,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 41.0%",
+      "timestamp": "2025-09-11T00:43:15.098081",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 41.0,
+        "current_step": "模型训练中... (已用时: 400s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:10.600560",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 642.0206683902439,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 41.0%",
+      "timestamp": "2025-09-11T00:43:25.113679",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 41.0,
+        "current_step": "模型训练中... (已用时: 410s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:20.608688",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 656.4226633658536,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 41.0%",
+      "timestamp": "2025-09-11T00:43:35.127785",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 41.0,
+        "current_step": "模型训练中... (已用时: 420s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:30.619108",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 670.8278947073171,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 41.0%",
+      "timestamp": "2025-09-11T00:43:45.142731",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 41.0,
+        "current_step": "模型训练中... (已用时: 430s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:40.628527",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 685.2316985365853,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 42.0%",
+      "timestamp": "2025-09-11T00:43:55.158212",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 42.0,
+        "current_step": "模型训练中... (已用时: 440s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:43:50.638409",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 671.4022510952381,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 42.0%",
+      "timestamp": "2025-09-11T00:44:05.173171",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 42.0,
+        "current_step": "模型训练中... (已用时: 450s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:00.648838",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 685.2261796190476,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 42.0%",
+      "timestamp": "2025-09-11T00:44:15.188669",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 42.0,
+        "current_step": "模型训练中... (已用时: 460s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:10.659249",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 699.0500542857144,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 43.0%",
+      "timestamp": "2025-09-11T00:44:25.205589",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 43.0,
+        "current_step": "模型训练中... (已用时: 470s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:20.668472",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 684.288856116279,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 43.0%",
+      "timestamp": "2025-09-11T00:44:35.212208",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 43.0,
+        "current_step": "模型训练中... (已用时: 480s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:30.678809",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 697.5583673023257,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 43.0%",
+      "timestamp": "2025-09-11T00:44:45.217474",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 43.0,
+        "current_step": "模型训练中... (已用时: 490s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:40.688957",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 710.8276345813954,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 43.0%",
+      "timestamp": "2025-09-11T00:44:55.233332",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 43.0,
+        "current_step": "模型训练中... (已用时: 500s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:44:50.699350",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 724.0972266279069,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 44.0%",
+      "timestamp": "2025-09-11T00:45:05.248314",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 44.0,
+        "current_step": "模型训练中... (已用时: 510s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:00.709753",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 707.966238,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 44.0%",
+      "timestamp": "2025-09-11T00:45:15.257888",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 44.0,
+        "current_step": "模型训练中... (已用时: 521s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:10.720086",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 720.7066338181818,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 44.0%",
+      "timestamp": "2025-09-11T00:45:25.273676",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 44.0,
+        "current_step": "模型训练中... (已用时: 531s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:20.727933",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 733.4438147272728,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: extracting, 进度: 45.0%",
+      "timestamp": "2025-09-11T00:45:35.291080",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "extracting",
+        "progress": 45.0,
+        "current_step": "模型训练中... (已用时: 541s)",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:30.735200",
+        "result_path": "",
+        "error_message": "",
+        "estimated_time_remaining": 716.5700837777779,
+        "processing_time": null
+      }
+    },
+    {
+      "test_name": "任务状态查询",
+      "success": true,
+      "message": "状态: completed, 进度: 100.0%",
+      "timestamp": "2025-09-11T00:45:48.934888",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "completed",
+        "progress": 100.0,
+        "current_step": "多图像三维重建完成",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:48.919963",
+        "result_path": "/home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views",
+        "error_message": "",
+        "estimated_time_remaining": null,
+        "processing_time": 591.297002
+      }
+    },
+    {
+      "test_name": "任务完成监控",
+      "success": true,
+      "message": "任务成功完成，总耗时: 604.5秒",
+      "timestamp": "2025-09-11T00:45:48.935335",
+      "details": {
+        "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+        "status": "completed",
+        "progress": 100.0,
+        "current_step": "多图像三维重建完成",
+        "message": "",
+        "created_at": "2025-09-11T00:35:44.450535",
+        "updated_at": "2025-09-11T00:45:48.919963",
+        "result_path": "/home/livablecity/InstantSplat/output_infer/api_uploads/5e1c47a3-08a3-4d76-934b-5718c2892abf/8_views",
+        "error_message": "",
+        "estimated_time_remaining": null,
+        "processing_time": 591.297002
+      }
+    },
+    {
+      "test_name": "结果下载",
+      "success": true,
+      "message": "下载成功，文件大小: 461 bytes, 类型: application/json",
+      "timestamp": "2025-09-11T00:45:48.940837",
+      "details": {
+        "content_length": 461,
+        "content_type": "application/json",
+        "headers": {
+          "Connection": "close",
+          "Content-Length": "461",
+          "Content-Type": "application/json",
+          "Date": "Wed, 10 Sep 2025 16:45:35 GMT",
+          "Server": "uvicorn"
+        }
+      }
+    },
+    {
+      "test_name": "任务列表查询",
+      "success": true,
+      "message": "获取到 1 个任务",
+      "timestamp": "2025-09-11T00:45:48.945690",
+      "details": {
+        "tasks": [
+          {
+            "task_id": "5e1c47a3-08a3-4d76-934b-5718c2892abf",
+            "status": "completed",
+            "progress": 100.0,
+            "created_at": "2025-09-11T00:35:44.450535",
+            "updated_at": "2025-09-11T00:45:48.919963"
+          }
+        ]
+      }
+    }
+  ],
+  "timestamp": "2025-09-11T00:45:48.955318"
+}

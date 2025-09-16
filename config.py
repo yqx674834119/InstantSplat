@@ -36,7 +36,7 @@ class APIConfig:
     # 处理参数配置
     N_FRAMES = 15  # 从视频中抽取的帧数（用于均匀采样）
     FRAMES_PER_SECOND = 1  # 每秒提取帧数（用于时间间隔采样）
-    GS_TRAIN_ITER = 500  # Gaussian Splatting训练迭代次数
+    GS_TRAIN_ITER = 1500  # Gaussian Splatting训练迭代次数
     IMAGE_SIZE = 512  # 图像处理尺寸
     
     # 服务器配置
