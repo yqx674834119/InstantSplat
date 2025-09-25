@@ -92,6 +92,8 @@ def training(dataset, opt, pipe, testing_iterations, saving_iterations, checkpoi
     gaussians = GaussianModel(dataset.sh_degree)
 
     # per-point-optimizer
+    # - 低置信度区域 → 高学习率 ：对于不确定的点，使用更大的学习率进行更积极的优化
+    # - 高置信度区域 → 低学习率 ：对于确定的点，使用较小的学习率进行稳定优化
     confidence_path = os.path.join(dataset.source_path, f"sparse_{dataset.n_views}/0", "confidence_dsp.npy")
     confidence_lr = load_and_prepare_confidence(confidence_path, device='cuda', scale=(1, 100))
     scene = Scene(dataset, gaussians)
@@ -295,6 +297,35 @@ def training_report(tb_writer, iteration, Ll1, loss, l1_loss, elapsed, testing_i
         torch.cuda.empty_cache()
 
 if __name__ == "__main__":
+    # 测试代码 - 使用Test_data/Image目录中的图像进行训练测试
+    if len(sys.argv) == 1:  # 没有命令行参数时运行测试
+        print("Running train.py test with Test_data/Image...")
+        
+        # 测试参数配置 - 与reconstruction_processor.py保持一致
+        test_args = [
+            "--source_path", "/home/livablecity/InstantSplat/Test_data/",
+            "--model_path", "/home/livablecity/InstantSplat/test_output/",
+            "--resolution", "1",
+            "--n_views", "12",
+            "--iterations", "2000",  # 测试用较少迭代次数
+            "--pp_optimizer",
+            "--optim_pose",
+            "--disable_viewer",
+            "--quiet"
+        ]
+        
+        # 创建输出目录
+        os.makedirs("/home/livablecity/InstantSplat/test_output/", exist_ok=True)
+        
+        # 运行测试
+        try:
+            print(f"Test parameters: {' '.join(test_args)}")
+            sys.argv = [sys.argv[0]] + test_args
+            print("Starting training test...")
+        except Exception as e:
+            print(f"Test failed with error: {e}")
+            sys.exit(1)
+    
     # Set up command line argument parser
     parser = ArgumentParser(description="Training script parameters")
     lp = ModelParams(parser)

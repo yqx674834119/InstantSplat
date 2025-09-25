@@ -1,15 +1,342 @@
-# InstantSplat FastAPI 接口服务开发记录
+# InstantSplat 项目开发时间记录
 
 ## 项目概述
+InstantSplat 是一个基于3D高斯溅射的快速重建项目，支持多种功能模块。
+
+## 开发时间记录
+
+### 2025-09-25 10:42:12 - 集成Supabase数据库更新任务状态功能
+
+**开发时间**: 约60分钟
+
+**开发背景**:
+- 用户需要将任务状态更新从本地内存改为Supabase数据库存储
+- 前端上传文件后，后端返回task_id，前端在Supabase projects表中插入pending记录
+- 需要在每次update_task_status和update_task_progress时同步更新数据库
+
+**主要实现内容**:
+1. **创建Supabase客户端模块** (`supabase_client.py`):
+   - 实现TaskStatusMapping类，映射TaskStatus枚举到数据库状态字段
+   - 创建SupabaseClient类处理数据库操作
+   - 提供update_project_status和update_project_progress方法
+   - 添加异步数据库更新的工具函数
+
+2. **修改任务管理器** (`task_manager.py`):
+   - 导入Supabase客户端更新函数
+   - 在update_task_status方法中添加异步数据库状态更新
+   - 在update_task_progress方法中添加异步数据库进度更新
+   - 添加_update_database_status_async和_update_database_progress_async方法
+   - 使用线程池执行器异步处理数据库更新，避免阻塞主线程
+
+**技术实现细节**:
+- 数据库字段映射: TaskStatus -> projects.status, progress -> projects.processing_progress
+- 异步更新机制: 使用ThreadPoolExecutor避免阻塞任务处理
+- 错误处理: 数据库更新失败时记录日志但不影响任务执行
+- 环境变量配置: 使用SUPABASE_URL和SUPABASE_ANON_KEY
+
+**修改文件**:
+- 新增: `supabase_client.py` - Supabase数据库客户端
+- 修改: `task_manager.py` - 集成数据库更新功能
+
+**数据库表结构分析**:
+- projects表包含: id, user_id, name, status, processing_progress, task_id, error_message等字段
+- status字段存储任务状态 (pending, processing, completed, failed等)
+- processing_progress字段存储进度百分比 (0-100)
+- error_message字段存储错误信息
+
+---
+
+### 2025-09-25 11:08:36 - Supabase客户端重构和RLS问题解决
+
+**问题背景**:
+用户反馈使用官方`supabase-py`客户端重写后，无法获取到数据库中的数据，显示获取到0个项目，但实际数据库中有15个项目。
+
+**问题分析**:
+1. **RLS (Row Level Security) 权限问题**: `projects`表启用了行级安全策略，只允许用户查看自己的项目
+2. **权限策略**: 
+   - 查看: `auth.uid() = user_id`
+   - 插入: `auth.uid() = user_id`  
+   - 更新: `auth.uid() = user_id`
+   - 删除: `auth.uid() = user_id`
+3. **外键约束**: `projects.user_id`必须存在于`profiles`表中
+
+**解决方案**:
+1. **双客户端架构**:
+   - `client`: 使用`anon_key`的普通客户端
+   - `admin_client`: 使用`service_role_key`的管理员客户端，可绕过RLS
+
+2. **权限处理**:
+   - 管理员操作使用`admin_client`绕过RLS限制
+   - 普通用户操作使用`client`遵循RLS策略
+
+3. **数据类型修复**:
+   - 确保`processing_progress`为整数类型
+   - 使用现有的`user_id`避免外键约束错误
+
+**修改的文件**:
+1. **重构文件**:
+   - `supabase_client.py` - 完全重写使用官方客户端库
+   - 添加双客户端支持（anon + service_role）
+   - 添加详细的调试和测试函数
+
+**技术实现细节**:
+- **客户端初始化**: 同时创建普通客户端和管理员客户端
+- **权限检测**: 自动检测并使用合适的客户端
+- **错误处理**: 完善的异常捕获和日志记录
+- **调试功能**: 添加权限调试、RLS绕过测试等功能
+
+**测试结果**:
+- ✅ 管理员客户端成功绕过RLS，获取到15个项目
+- ✅ 项目创建、更新、删除操作正常
+- ✅ 数据类型和外键约束问题已解决
+- ⚠️ 普通客户端受RLS限制，只能查看用户自己的项目
+
+**环境配置**:
+确认`.env.supabase`文件包含必要的配置：
+- `NEXT_PUBLIC_SUPABASE_URL`: Supabase项目URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`: 匿名访问密钥
+- `SUPABASE_SERVICE_ROLE_KEY`: 服务角色密钥（绕过RLS）
+
+---
+
+### 2025-01-17 - API服务器points参数处理逻辑修正
+
+**开发时间**: 约30分钟
+
+**修正背景**:
+- 发现之前对points参数处理的理解有误
+- 原实现为每个点单独执行分割，实际应该是多个点作为一次输入
+- 根据用户提供的调用代码进行逻辑修正
+
+**主要修正内容**:
+1. **处理逻辑修正**: 将多个点作为一次调用的参数传递给sam2_video.py
+2. **命令构建优化**: 所有点坐标一次性传入--points参数
+3. **参数格式调整**: 提取所有点的(x,y,label)坐标，使用统一的frame参数
+4. **日志优化**: 更新日志信息反映正确的处理逻辑
+5. **错误处理**: 简化错误处理逻辑，适应单次调用模式
+
+**修改文件**:
+- `api_server.py`: 修正run_segmentation_preprocessing函数的处理逻辑
+
+**技术实现**:
+- 解析JSON格式的points参数: `[(x, y, label, frame), ...]`
+- 提取第一个点的frame作为统一帧参数
+- 构建点坐标列表: `[x1, y1, label1, x2, y2, label2, ...]`
+- 单次调用sam2_video.py传入所有点坐标
+- 命令格式: `python sam2_video.py input_dir --points x1 y1 label1 x2 y2 label2 --frame N --output output_dir`
+
+**验证结果**:
+- 语法检查通过
+- 服务器启动正常
+- API接口可正常访问
+
+---
+
+### 2025-01-17 - API服务器points参数格式优化
+
+**开发时间**: 约30分钟
+
+**主要修改内容**:
+1. 修改points参数格式从字符串改为JSON列表格式
+2. 更新run_segmentation_preprocessing函数支持多个分割点
+3. 添加JSON解析和验证逻辑
+4. 支持批量处理多个分割点
+5. 更新API文档说明新的参数格式
+
+**修改文件**:
+- `api_server.py`: 更新points参数处理逻辑
+
+**修改原因**:
+- 用户需要支持多个分割点的输入
+- 原有的字符串格式不便于传递多个点的坐标
+- JSON格式更加灵活和标准化
+
+**技术细节**:
+- 新格式: `[(630, 283, 1, 0), (400, 200, 1, 1)]`
+- 支持任意数量的分割点
+- 每个点包含x, y, label, frame四个参数
+- 添加了完整的参数验证和错误处理
+- 保持向后兼容性
+
+### 2025-01-17 - API服务器分割功能集成
+**总开发时间**: 约1.5小时
+
+**开始时间**: 2025-01-17  
+**完成时间**: 2025-01-17  
+**总耗时**: 约 1.5 小时
+
+#### 主要修改内容
+1. **为upload_file函数添加分割功能支持**
+   - 添加可选的 `points` 参数，格式为"x y label frame"
+   - 在zip文件解压后执行分割预处理
+   - 集成SAM2分割功能到上传流程中
+
+2. **实现分割预处理功能**
+   - 新增 `run_segmentation_preprocessing` 异步函数
+   - 使用conda环境调用sam2_video.py脚本
+   - 支持点击式分割，输出覆盖原始图像
+
+3. **分割命令集成**
+   - 命令格式: `conda run -n sam2 python /home/livablecity/Grounded-SAM-2/sam2_video.py`
+   - 输入参数: 图像目录、分割点坐标、标签、帧号
+   - 输出目录与输入目录相同，实现原地覆盖
+
+#### 修改的文件
+- `api_server.py`: 添加points参数和分割预处理功能
+
+#### 修改原因
+- 用户需要在图像上传后自动执行分割预处理
+- 提供可选的分割功能，不影响原有重建流程
+- 集成SAM2分割技术，提升重建质量
+
+#### 技术细节
+- 使用异步subprocess执行分割命令
+- 错误处理：分割失败不影响后续重建流程
+- 参数验证：确保points参数格式正确
+- 日志记录：详细记录分割过程和结果
+
+### 2025-01-17 - API服务器优化
+**总开发时间**: 约1小时
+
+**开始时间**: 2025-01-17  
+**完成时间**: 2025-01-17  
+**总耗时**: 约 1 小时
+
+#### 主要修改内容
+1. **整合upload_file功能**
+   - 修改 `upload_file` 函数，使其仅接受zip格式文件
+   - 删除对视频文件和单个图像文件的支持
+   - 更新文件类型验证逻辑
+
+2. **删除视频处理相关代码**
+   - 完全删除 `process_video_task` 函数
+   - 删除视频帧提取和处理逻辑
+   - 移除视频文件验证相关代码
+
+3. **删除单个图像处理相关代码**
+   - 完全删除 `process_image_task` 函数
+   - 删除单个图像处理和验证逻辑
+
+4. **清理导入模块**
+   - 删除不再使用的 `video_processor` 导入
+   - 删除不再使用的 `image_processor` 导入
+   - 删除不再使用的 `cv2` 导入
+
+#### 修改文件
+- `/home/livablecity/InstantSplat/api_server.py`
+
+#### 修改原因
+- 前端已处理完善，只会发送包含多个图像的zip文件到后端
+- 简化代码结构，提高可维护性
+- 删除冗余功能，专注于zip文件处理
+
+#### 技术细节
+- 保留了zip文件验证和解压功能
+- 保留了图像提取和三维重建处理流程
+- 保留了任务管理和状态跟踪功能
+- 保留了邮件通知功能
+
+### 2025-01-09 (第一阶段)
+**总开发时间**: 约4小时
 
 基于 `/home/livablecity/InstantSplat/scripts/run_infer.sh` 的参考实现，开发了一个完整的 FastAPI 接口服务，用于接收前端上传的视频文件并进行三维重建处理。
-
-## 开发时间
 
 **开始时间**: 2025-01-09  
 **完成时间**: 2025-01-09  
 **总耗时**: 约 3 小时
 **最后更新**: 2025-01-09 (邮件通知功能实现)
+
+### 2025-01-09 (第二阶段) - SAM2分割mask支持
+**总开发时间**: 约2小时
+
+### 开发时间
+- 开始时间：2025-01-09 上午
+- 完成时间：2025-01-09 下午
+
+### 功能模块
+#### 1. init_geo.py - 分割掩码集成（第一版）
+- **位置**：第78-79行后
+- **功能**：从PNG图像alpha通道读取分割掩码并更新overlapping_masks
+- **具体修改**：
+  ```python
+  # Read segmentation masks from PNG alpha channel
+  print(f'>> Reading segmentation masks from PNG alpha channel...')
+  segmentation_masks = []
+  for img_file in image_files:
+      # Load PNG image with alpha channel
+      import cv2
+      img_rgba = cv2.imread(str(img_file), cv2.IMREAD_UNCHANGED)
+      if img_rgba.shape[2] == 4:  # Has alpha channel
+          # Extract alpha channel as mask (0-255 -> 0-1)
+          alpha_mask = img_rgba[:, :, 3] / 255.0
+          # Resize mask to match processed image size
+          alpha_mask_resized = cv2.resize(alpha_mask, (image_size, image_size))
+          segmentation_masks.append(alpha_mask_resized)
+      else:
+          # If no alpha channel, create a mask of all ones (no masking)
+          segmentation_masks.append(np.ones((image_size, image_size)))
+  
+  # Convert to numpy array and use as overlapping_masks
+  segmentation_masks = np.array(segmentation_masks)
+  # Invert masks: 1 for background (to be ignored), 0 for foreground (to be kept)
+  overlapping_masks = 1.0 - segmentation_masks
+  print(f'>> Loaded {len(segmentation_masks)} segmentation masks from PNG alpha channel')
+  ```
+
+#### 2. init_geo.py - 分割掩码集成（第二版 - 保持代码稳定性）
+- **位置**：第72-79行修改
+- **功能**：保留现有overlapping_masks逻辑，将PNG alpha通道mask与现有mask取交集
+- **具体修改**：
+  ```python
+  # Calculate the co-visibility mask
+  print(f'>> Calculate the co-visibility mask...')
+  if depth_thre > 0:
+      overlapping_masks = compute_co_vis_masks(sorted_conf_indices, depthmaps, pts3d, intrinsics, extrinsics_w2c, imgs.shape, depth_threshold=depth_thre)
+      overlapping_masks = ~overlapping_masks
+  else:
+      co_vis_dsp = False
+      overlapping_masks = None
+  
+  # Read segmentation masks from PNG alpha channel and combine with existing masks
+  print(f'>> Reading segmentation masks from PNG alpha channel...')
+  segmentation_masks = []
+  for img_file in image_files:
+      # Load PNG image with alpha channel
+      import cv2
+      img_rgba = cv2.imread(str(img_file), cv2.IMREAD_UNCHANGED)
+      if img_rgba.shape[2] == 4:  # Has alpha channel
+          # Extract alpha channel as mask (0-255 -> 0-1)
+          alpha_mask = img_rgba[:, :, 3] / 255.0
+          # Resize mask to match processed image size
+          alpha_mask_resized = cv2.resize(alpha_mask, (image_size, image_size))
+          segmentation_masks.append(alpha_mask_resized)
+      else:
+          # If no alpha channel, create a mask of all ones (no masking)
+          segmentation_masks.append(np.ones((image_size, image_size)))
+  
+  # Convert to numpy array
+  segmentation_masks = np.array(segmentation_masks)
+  # Invert masks: 1 for background (to be ignored), 0 for foreground (to be kept)
+  alpha_masks = 1.0 - segmentation_masks
+  print(f'>> Loaded {len(segmentation_masks)} segmentation masks from PNG alpha channel')
+  
+  # Combine with existing overlapping_masks (take intersection)
+  if overlapping_masks is not None:
+      # Take intersection: both masks should indicate pixels to ignore
+      overlapping_masks = np.logical_or(overlapping_masks, alpha_masks)
+      print(f'>> Combined co-visibility masks with alpha channel masks')
+  else:
+      # If no co-visibility masks, use only alpha masks
+      overlapping_masks = alpha_masks
+      print(f'>> Using only alpha channel masks (no co-visibility masks)')
+  ```
+
+### 技术特点
+- **代码稳定性**：保留现有overlapping_masks的所有逻辑，确保向后兼容
+- **智能组合**：将PNG alpha通道mask与现有co-visibility mask取交集
+- **自动检测**：智能检测PNG图像是否包含alpha通道
+- **灵活支持**：支持有无alpha通道的混合图像集
+- **高效处理**：直接从PNG alpha通道提取mask，无需额外文件
 
 ## 已完成的功能模块
 
@@ -1071,3 +1398,245 @@ python3 -c "from supabase_email_notifier import send_test_email; import asyncio;
 - 实现PLY文件压缩功能（训练完成后自动压缩PLY文件再上传）
   - 同步修改process_image_task和process_multi_image_task函数，添加相同的PLY文件压缩逻辑
   - 创建并测试PLY文件压缩功能，测试结果：原文件258MB压缩至63.75MB，压缩率75.29%
+
+---
+
+### 2025-09-25 11:48:55 - 任务管理器数据库更新功能完善
+
+**修改背景**:
+用户要求修改`set_task_result`和`cancel_task`方法，确保数据库结果更新，保持与`update_task_progress`和`update_task_status`的更新方式一致。
+
+**问题分析**:
+1. **现有问题**: `set_task_result`和`cancel_task`方法只更新内存中的任务状态，没有同步到数据库
+2. **数据库字段匹配**: 需要确保更新的字段与`projects`表结构匹配
+3. **一致性要求**: 需要与现有的异步数据库更新方式保持一致
+
+**projects表结构分析**:
+- `status`: text类型，存储任务状态
+- `processing_progress`: integer类型，存储进度百分比
+- `processing_completed_at`: timestamp类型，完成时间
+- `result_model_url`: text类型，结果模型URL
+- `result_files`: jsonb类型，结果文件列表
+- `metadata`: jsonb类型，元数据信息
+- `updated_at`: timestamp类型，更新时间
+
+**修改内容**:
+
+1. **supabase_client.py**:
+   - 新增`update_project_result`方法处理结果数据更新
+   - 新增`update_task_result_in_db`便捷函数
+   - 支持更新`result_model_url`、`result_files`、`processing_completed_at`等字段
+   - 将处理时间和其他元数据存储到`metadata`字段
+
+2. **task_manager.py**:
+   - 修改`set_task_result`方法：
+     - 添加状态更新为`COMPLETED`
+     - 计算并设置`processing_time`
+     - 调用`_update_database_result_async`异步更新数据库
+   - 新增`_update_database_result_async`方法：
+     - 使用`ThreadPoolExecutor`异步执行数据库更新
+     - 调用`update_task_result_in_db`便捷函数
+   - `cancel_task`方法已在之前修改中完善
+
+**技术实现细节**:
+- **异步更新**: 使用`ThreadPoolExecutor`确保数据库更新不阻塞主线程
+- **数据类型匹配**: 确保`processing_progress`为整数，时间戳使用ISO格式
+- **错误处理**: 完善的异常捕获和日志记录
+- **字段映射**: 将API结果数据正确映射到数据库字段
+
+**修改的文件**:
+- `supabase_client.py`: 新增结果数据更新方法
+- `task_manager.py`: 完善任务结果设置的数据库同步
+
+**数据流程**:
+1. 任务完成时调用`set_task_result`
+2. 更新内存中的任务状态和结果数据
+3. 异步调用`_update_database_result_async`
+4. 通过`update_task_result_in_db`更新数据库
+5. 使用`admin_client`绕过RLS限制完成更新
+
+**字段不匹配检查**:
+经过分析，所有更新字段都与`projects`表结构匹配：
+- ✅ `status`: 文本类型匹配
+- ✅ `processing_progress`: 整数类型匹配
+- ✅ `processing_completed_at`: 时间戳类型匹配
+- ✅ `result_model_url`: 文本类型匹配
+- ✅ `result_files`: JSONB类型匹配
+- ✅ `metadata`: JSONB类型匹配
+- ✅ `updated_at`: 时间戳类型匹配
+
+**测试建议**:
+用户需要测试以下场景：
+1. 任务完成后`set_task_result`的数据库同步
+2. 任务取消后`cancel_task`的数据库同步
+3. 结果数据字段的正确存储
+4. 处理时间计算的准确性
+
+---
+
+## 2025-09-25 16:44:47 - 修复数据库更新异常和类型错误
+
+**背景**: 
+用户报告在`api_server.log`中出现两个关键错误：
+1. `TaskManager`对象没有`lock`属性的`AttributeError`
+2. `supabase_client.py`中项目进度更新时的`TypeError`
+
+**问题分析**:
+1. **AttributeError**: `task_manager.py`中`set_task_result`方法使用了`self.lock`，但实际属性名为`self.task_lock`
+2. **TypeError**: `update_progress`方法调用`_update_database_progress_async`时参数顺序错误，导致类型不匹配
+
+**修复内容**:
+
+1. **task_manager.py**:
+   - 修复`set_task_result`方法中的`self.lock` → `self.task_lock`
+   - 修复`update_progress`方法中`_update_database_progress_async`调用参数顺序
+   - 为所有数据库更新方法添加详细日志记录：
+     - `_update_database_status_async`: 状态更新日志
+     - `_update_database_progress_async`: 进度更新日志  
+     - `_update_database_result_async`: 结果更新日志
+
+2. **supabase_client.py**:
+   - 为所有数据库更新方法添加详细日志记录：
+     - `update_project_progress`: 进度更新数据和响应日志
+
+---
+
+## 2025-09-25 17:04:12 - 添加文件大小字段到数据库
+
+**背景**: 
+用户要求将PLY文件的大小信息添加到数据库的`file_size`字段（int8类型），以便更好地跟踪和管理生成的3D模型文件。
+
+**需求分析**:
+1. 在`api_server.py#L571`处已经计算了压缩后的文件大小
+2. 需要将此文件大小传递到`set_task_result`的结果数据中
+3. 需要更新数据库调用链以支持`file_size`字段
+
+**修复内容**:
+
+1. **api_server.py**:
+   - 在`set_task_result`调用中添加`file_size`参数
+   - 将计算得到的`final_file_size`同时放入结果数据和作为独立参数传递
+
+2. **task_manager.py**:
+   - 更新`set_task_result`方法签名，添加`file_size: Optional[int] = None`参数
+   - 更新`_update_database_result_async`方法签名，添加`file_size`参数
+   - 在调用链中传递`file_size`参数到数据库更新函数
+
+3. **supabase_client.py**:
+   - 更新`update_project_result`方法，已有`file_size: Optional[int] = None`参数
+   - 更新`update_task_result_in_db`函数，添加`file_size`参数并传递给`update_project_result`
+   - 确保`file_size`字段正确写入数据库的`file_size`列（int8类型）
+
+**技术实现细节**:
+- 文件大小通过`os.path.getsize(ply_file_path)`获取，单位为字节
+- 参数传递链：`api_server.py` → `task_manager.set_task_result` → `_update_database_result_async` → `update_task_result_in_db` → `update_project_result`
+- 数据库字段类型为`int8`，可存储最大约9EB的文件大小
+
+**修改文件列表**:
+- `/home/livablecity/InstantSplat/api_server.py` - 添加file_size参数传递
+- `/home/livablecity/InstantSplat/task_manager.py` - 更新方法签名和参数传递
+- `/home/livablecity/InstantSplat/supabase_client.py` - 更新数据库函数签名
+
+**测试建议**:
+1. 验证PLY文件生成后文件大小正确计算
+2. 确认数据库`file_size`字段正确更新
+3. 检查不同大小文件的处理情况
+     - `update_project_status`: 状态更新数据和响应日志
+     - `update_project_result`: 结果更新数据和响应日志
+
+**技术实现细节**:
+- **日志格式**: 使用`[数据库更新]`前缀统一标识数据库操作日志
+- **参数修复**: 确保方法调用参数顺序与方法签名一致
+- **错误处理**: 增强异常捕获，记录详细错误类型和消息
+
+---
+
+## 2025-09-25 17:57:12 - 添加第一张图像上传到公网服务器功能
+
+**背景**: 用户要求在图像检查后，将第一张图像也上传到公网服务器，仿照PLY文件上传的逻辑实现。
+
+**需求分析**:
+1. 在图像数量检查通过后，立即上传第一张图像到公网服务器
+2. 使用与PLY文件上传相同的scp命令和服务器配置
+3. 将第一张图像的公网URL添加到任务结果数据中
+4. 保持原有的错误处理和日志记录机制
+
+**修改内容**:
+
+1. **api_server.py** (第507-536行):
+   - 在图像数量检查后添加第一张图像上传逻辑
+   - 获取第一张图像路径和文件扩展名
+   - 构建scp命令，远程文件名格式为`{task_id}.first_image{extension}`
+   - 添加完整的错误处理（超时、命令失败、异常）
+   - 记录详细的上传日志信息
+
+2. **api_server.py** (第656行):
+   - 在`set_task_result`调用中添加`first_image_url`字段
+   - 将第一张图像的公网URL包含在任务结果数据中
+
+**技术实现细节**:
+- **文件命名**: 远程文件名格式为`{task_id}.first_image{原始扩展名}`
+- **上传时机**: 在图像数量验证通过后立即执行，确保后续处理可以使用
+- **URL格式**: `https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}`
+- **错误处理**: 上传失败不影响主流程，仅记录错误日志
+- **支持格式**: 自动识别.jpg、.jpeg、.png等图像格式的扩展名
+
+**修改文件列表**:
+- `/home/livablecity/InstantSplat/api_server.py` - 添加第一张图像上传功能和结果数据字段
+
+**测试建议**:
+1. 验证不同格式图像（jpg、jpeg、png）的上传功能
+2. 确认第一张图像URL正确添加到任务结果中
+3. 测试网络异常情况下的错误处理
+4. 验证远程服务器文件命名的唯一性
+- **数据记录**: 记录发送到数据库的完整数据内容
+
+**修改的文件**:
+- `task_manager.py`: 修复属性错误和参数顺序，添加数据库操作日志
+- `supabase_client.py`: 添加数据库更新操作的详细日志记录
+
+**测试建议**:
+- 验证修复后不再出现`AttributeError`和`TypeError`
+- 检查数据库更新日志输出是否正常
+- 确认异步更新功能正常工作
+
+---
+
+## 第一张图像压缩上传功能优化 - 2025-09-25 18:11:21
+
+**背景**: 用户要求修改第一张图像上传功能，将图像压缩为JPEG格式后再上传到远程服务器，以减少文件大小和传输时间。
+
+**需求分析**:
+1. 将原始图像压缩为JPEG格式
+2. 使用固定的.jpg扩展名
+3. 保持原有的上传逻辑和错误处理
+
+**修改内容**:
+
+### 1. api_server.py 修改 (第21行)
+- **添加PIL库导入**: `from PIL import Image`
+- **用途**: 支持图像格式转换和压缩功能
+
+### 2. api_server.py 修改 (第509-556行)
+- **图像压缩逻辑**: 使用PIL将原始图像转换为JPEG格式
+- **质量设置**: JPEG压缩质量设为85%，启用优化
+- **格式处理**: 自动将RGBA模式转换为RGB模式
+- **临时文件**: 创建临时JPEG文件进行上传，上传后自动清理
+- **固定扩展名**: 远程文件名统一使用`.jpg`扩展名
+
+**技术实现细节**:
+- **压缩参数**: `quality=85, optimize=True`
+- **模式转换**: RGBA → RGB（避免JPEG不支持透明度的问题）
+- **临时文件管理**: 使用`tempfile.mkdtemp()`创建临时目录，上传后清理
+- **错误处理**: 添加临时文件清理的异常处理
+- **日志优化**: 更新日志信息反映压缩上传的状态
+
+**修改文件列表**:
+- `/home/livablecity/InstantSplat/api_server.py` - 添加PIL导入和图像压缩上传功能
+
+**测试建议**:
+1. 验证不同格式图像（PNG、JPEG、BMP等）的压缩转换功能
+2. 确认压缩后的文件大小和质量符合预期
+3. 测试RGBA模式图像的RGB转换功能
+4. 验证临时文件的正确清理
+5. 确认远程服务器上的文件名格式统一为.jpg

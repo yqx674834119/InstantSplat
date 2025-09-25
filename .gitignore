@@ -3,6 +3,7 @@
 .idea
 assets
 Test_data
+test_output
 temp
 data
 output*
@@ -11,3 +12,5 @@ LongSplat
 build
 diff_rasterization/diff_rast.egg-info
 diff_rasterization/dist
+*.log
+*.json

@@ -17,6 +17,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 
 from config import api_config
+from supabase_client import update_task_status_in_db, update_task_progress_in_db,update_task_result_in_db,update_task_field_in_db
 
 # 设置日志
 logging.basicConfig(level=logging.INFO)
@@ -162,11 +163,15 @@ class TaskManager:
                 task.processing_time = (task.updated_at - task.created_at).total_seconds()
             
             logger.info(f"任务 {task_id} 状态更新为: {status.value}")
+            
+            # 异步更新数据库状态
+            self._update_database_status_async(task_id, status.value, error_message)
+            
             return True
-    
+        
     def update_task_progress(self, task_id: str, current_step: str, 
                            completed_steps: int, total_steps: int,
-                           details: Optional[Dict[str, Any]] = None) -> bool:
+                           message: str = "", details: Optional[Dict[str, Any]] = None) -> bool:
         """更新任务进度
         
         Args:
@@ -174,6 +179,7 @@ class TaskManager:
             current_step: 当前步骤描述
             completed_steps: 已完成步骤数
             total_steps: 总步骤数
+            message: 进度消息
             details: 额外详情
             
         Returns:
@@ -198,35 +204,70 @@ class TaskManager:
                 total_steps=total_steps,
                 completed_steps=completed_steps,
                 percentage=percentage,
+                message=message,
                 estimated_time_remaining=estimated_time,
                 details=details or {}
             )
             task.updated_at = datetime.now()
             
             logger.debug(f"任务 {task_id} 进度更新: {current_step} ({percentage:.1f}%)")
+            
+            # 异步更新数据库进度
+            self._update_database_progress_async(task_id, current_step, completed_steps, total_steps, details)
+            
             return True
     
-    def set_task_result(self, task_id: str, result_data: Dict[str, Any]) -> bool:
-        """设置任务结果
+    def set_task_result(self, task_id: str, result_data: Dict[str, Any]):
+        """设置任务结果"""
+        with self.task_lock:
+            if task_id in self.tasks:
+                task = self.tasks[task_id]
+                task.result_data = result_data
+                task.status = TaskStatus.COMPLETED
+                task.updated_at = datetime.now()
+                
+                # 计算处理时间
+                if task.created_at:
+                    task.processing_time = (task.updated_at - task.created_at).total_seconds()
+                
+                logger.info(f"任务 {task_id} 结果已设置，状态更新为完成")
+                
+                # 异步更新数据库结果
+                self._update_database_result_async(task_id, result_data, task.processing_time)
+                
+                return True
+        return False
+    
+    def set_field(self, task_id: str, field_name: str, field_value: Any):
+        """设置任务字段
         
         Args:
             task_id: 任务ID
-            result_data: 结果数据
-            
-        Returns:
-            是否设置成功
+            field_name: 字段名
+            field_value: 字段值
         """
         with self.task_lock:
-            task = self.tasks.get(task_id)
-            if not task:
-                return False
-            
-            task.result_data = result_data.copy()
-            task.updated_at = datetime.now()
-            
-            logger.info(f"任务 {task_id} 结果已设置")
-            return True
+            if task_id in self.tasks:
+                task = self.tasks[task_id]
+                setattr(task, field_name, field_value)
+                task.updated_at = datetime.now()
+                
+                # 异步更新数据库字段
+                self._update_database_field_async(task_id, field_name, field_value)
+                
+                return True
+        return False
     
+    def _update_database_field_async(self, task_id: str, field_name: str, field_value: Any):
+        """异步更新数据库字段"""
+        def update_field():
+            try:
+                asyncio.run(update_task_field_in_db(task_id, field_name, field_value))
+            except Exception as e:
+                logger.error(f"[数据库更新] 字段更新异常: task_id={task_id}, field={field_name}, error={str(e)}, type={type(e).__name__}")
+        
+        self.executor.submit(update_field)
+
     def cancel_task(self, task_id: str) -> bool:
         """取消任务
         
@@ -249,8 +290,70 @@ class TaskManager:
             task.updated_at = datetime.now()
             
             logger.info(f"任务 {task_id} 已取消")
+            
+            # 异步更新数据库状态
+            self._update_database_status_async(task_id, TaskStatus.CANCELLED.value)
+            
             return True
+    def _update_database_status_async(self, task_id: str, status: str, error_message: Optional[str] = None):
+        """异步更新数据库中的任务状态"""
+        
+        #logger.info(f"[数据库更新] 准备异步更新状态: task_id={task_id}, status={status}, error={error_message}")
+        
+        def update_status():
+            try:
+                #logger.info(f"[数据库更新] 开始执行状态更新: task_id={task_id}")
+                asyncio.run(update_task_status_in_db(task_id, status, error_message))
+                #logger.info(f"[数据库更新] 状态更新完成: task_id={task_id}")
+            except Exception as e:
+                logger.error(f"[数据库更新] 状态更新异常: task_id={task_id}, error={str(e)}, type={type(e).__name__}")
+        
+        self.executor.submit(update_status)
     
+    def _update_database_progress_async(self, task_id: str, current_step: str,
+                                      completed_steps: int, total_steps: int,
+                                      details: Optional[Dict[str, Any]] = None):
+        """异步更新数据库进度"""
+        
+        #logger.info(f"[数据库更新] 准备异步更新进度: task_id={task_id}, step={current_step}, completed={completed_steps}/{total_steps}")
+        
+        def update_progress():
+            try:
+                #logger.info(f"[数据库更新] 开始执行进度更新: task_id={task_id}")
+                asyncio.run(update_task_progress_in_db(
+                    task_id=task_id,
+                    current_step=current_step,
+                    completed_steps=completed_steps,
+                    total_steps=total_steps,
+                    details=details
+                ))
+                #logger.info(f"[数据库更新] 进度更新完成: task_id={task_id}")
+            except Exception as e:
+                logger.error(f"[数据库更新] 进度更新异常: task_id={task_id}, error={str(e)}, type={type(e).__name__}")
+        
+        self.executor.submit(update_progress)
+
+    def _update_database_result_async(self, task_id: str, result_data: Dict[str, Any],
+                                    processing_time: Optional[float] = None):
+        """异步更新数据库结果数据"""
+        
+        #logger.info(f"[数据库更新] 准备异步更新结果: task_id={task_id}, processing_time={processing_time}")
+        #logger.info(f"[数据库更新] 结果数据: {json.dumps(result_data, ensure_ascii=False, indent=2)}")
+        
+        def update_result():
+            try:
+                #logger.info(f"[数据库更新] 开始执行结果更新: task_id={task_id}")
+                asyncio.run(update_task_result_in_db(
+                    task_id=task_id,
+                    result_data=result_data,
+                    processing_time=processing_time
+                ))
+                #logger.info(f"[数据库更新] 结果更新完成: task_id={task_id}")
+            except Exception as e:
+                logger.error(f"[数据库更新] 结果更新异常: task_id={task_id}, error={str(e)}, type={type(e).__name__}")
+        
+        self.executor.submit(update_result)
+
     def list_tasks(self, status_filter: Optional[TaskStatus] = None, 
                   limit: Optional[int] = None) -> List[TaskInfo]:
         """列出任务

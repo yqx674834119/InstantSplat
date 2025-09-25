@@ -16,9 +16,9 @@ from typing import Dict, List, Optional
 from datetime import datetime
 import json
 import subprocess
-import cv2
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
+from PIL import Image
 
 from fastapi import FastAPI, File, UploadFile, HTTPException, BackgroundTasks, Depends, Request
 from fastapi.responses import JSONResponse, FileResponse,StreamingResponse
@@ -31,7 +31,6 @@ import traceback
 
 # 导入自定义模块
 from task_manager import TaskManager, TaskStatus as TMTaskStatus, TaskType, task_manager
-from video_processor import VideoProcessor, video_processor, ImageProcessor, image_processor
 from reconstruction_processor import ReconstructionProcessor, reconstruction_processor
 from supabase_email_notifier import send_training_completion_email, send_test_email
 from config import api_config
@@ -127,6 +126,80 @@ def extract_images_from_zip(zip_path: Path, images_dir: Path) -> int:
             
     except Exception as e:
         logger.error(f"提取zip文件失败: {e}")
+        raise
+
+async def run_segmentation_preprocessing(input_dir: str, points: str) -> None:
+    """执行SAM2分割预处理
+    
+    Args:
+        input_dir: 输入图像目录路径
+        points: 分割点参数，格式为JSON字符串，例如"[(630, 283, 1, 0)]"
+                每个点包含(x, y, label, frame)，其中frame用于指定处理帧
+    """
+    try:
+        # 解析points参数（JSON格式）
+        import json
+        points_list = json.loads(points)
+        
+        if not isinstance(points_list, list) or len(points_list) == 0:
+            raise ValueError(f"points参数必须是非空列表，实际为: {points}")
+        
+        # 验证每个点的格式
+        for i, point in enumerate(points_list):
+            if not isinstance(point, (list, tuple)) or len(point) != 4:
+                raise ValueError(f"第{i+1}个点格式错误，应为[x, y, label, frame]，实际为: {point}")
+        
+        # 提取frame参数（假设所有点使用同一帧）
+        frame = points_list[0][3]  # 使用第一个点的frame参数
+        
+        # 构建points参数列表 (x, y, label格式，去掉frame)
+        point_coords = []
+        for x, y, label, _ in points_list:
+            point_coords.extend([str(x), str(y), str(label)])
+        
+        logger.info(f"处理{len(points_list)}个分割点，目标帧: {frame}")
+        logger.info(f"点坐标: {points_list}")
+        
+        # 构建分割命令 - 所有点作为一次调用的参数
+        cmd = [
+            "conda", "run", "-n", "sam2",
+            "python", "/home/livablecity/Grounded-SAM-2/sam2_video.py",
+            input_dir,
+            "--points"
+        ]
+        
+        # 添加所有点的坐标
+        cmd.extend(point_coords)
+        
+        # 添加frame参数
+        cmd.extend(["--frame", str(frame)])
+        
+        # 添加输出目录
+        cmd.extend(["--output", input_dir])
+        
+        logger.info(f"执行分割命令: {' '.join(cmd)}")
+        
+        # 执行命令
+        process = await asyncio.create_subprocess_exec(
+            *cmd,
+            stdout=asyncio.subprocess.PIPE,
+            stderr=asyncio.subprocess.PIPE,
+            cwd="/home/livablecity/Grounded-SAM-2"
+        )
+        
+        stdout, stderr = await process.communicate()
+        
+        if process.returncode != 0:
+            error_msg = f"分割命令执行失败，返回码: {process.returncode}, stderr: {stderr.decode()}"
+            logger.error(error_msg)
+            raise RuntimeError(error_msg)
+        
+        logger.info(f"分割处理完成，处理了{len(points_list)}个点")
+        
+        logger.info(f"分割命令执行成功，stdout: {stdout.decode()}")
+        
+    except Exception as e:
+        logger.error(f"分割预处理异常: {e}")
         raise
 
 # 数据模型
@@ -234,14 +307,21 @@ async def root():
     """API健康检查端点"""
     return {"message": "InstantSplat 3D Reconstruction API is running", "version": "1.0.0"}
 
-@app.post("/upload", response_model=UploadResponse, summary="上传图像或视频文件")
+@app.post("/upload", response_model=UploadResponse, summary="上传包含多个图像的zip文件")
 async def upload_file(
     background_tasks: BackgroundTasks,
-    file: UploadFile = File(..., description="图像或视频文件 (支持JPG/PNG/MP4/MOV/AVI等格式)"),
-    email: Optional[str] = None
+    file: UploadFile = File(..., description="包含多个图像的zip文件"),
+    email: Optional[str] = None,
+    points: Optional[str] = None
 ):
-    """上传图像或视频文件并开始三维重建处理"""
-    logger.info(f"收到文件上传请求: {file.filename}, email参数: {email}")
+    """上传包含多个图像的zip文件并开始三维重建处理
+    
+    Args:
+        file: 包含多个图像的zip文件
+        email: 可选的邮件地址，用于接收处理完成通知
+        points: 可选的分割点参数，格式为JSON字符串，例如"[(630, 283, 1, 0)]"或"[(630, 283, 1, 0), (400, 200, 1, 1)]"
+    """
+    logger.info(f"收到zip文件上传请求: {file.filename}, email参数: {email}")
     logger.info(f"email参数类型: {type(email)}, 是否为None: {email is None}")
     
     try:
@@ -252,18 +332,13 @@ async def upload_file(
                 detail="文件名不能为空"
             )
         
-        # 检测文件类型并验证格式
+        # 检测文件类型并验证格式 - 仅支持zip格式
         file_ext = Path(file.filename).suffix.lower()
-        is_video = file_ext in config.ALLOWED_VIDEO_FORMATS
-        is_image = file_ext in config.ALLOWED_IMAGE_FORMATS
-        is_archive = file_ext in config.ALLOWED_ARCHIVE_FORMATS
-        
-        if not is_video and not is_image and not is_archive:
+        if file_ext not in config.ALLOWED_ARCHIVE_FORMATS:
             logger.warning(f"不支持的文件格式: {file.filename}")
-            supported_formats = list(config.ALLOWED_VIDEO_FORMATS) + list(config.ALLOWED_IMAGE_FORMATS) + list(config.ALLOWED_ARCHIVE_FORMATS)
             raise HTTPException(
                 status_code=400, 
-                detail=f"不支持的文件格式。支持的格式: {', '.join(supported_formats)}"
+                detail=f"仅支持zip格式文件。当前文件格式: {file_ext}"
             )
         
         # 检查文件大小
@@ -284,47 +359,22 @@ async def upload_file(
                 detail="文件为空"
             )
         
-        # 根据文件类型检查大小限制
-        if is_image:
-            max_size = config.MAX_IMAGE_SIZE
-            size_type = "图像"
-        elif is_archive:
-            max_size = config.MAX_FILE_SIZE  # zip文件使用视频文件的大小限制
-            size_type = "压缩包"
-        else:
-            max_size = config.MAX_FILE_SIZE
-            size_type = "视频"
-        
+        # 检查zip文件大小限制
+        max_size = config.MAX_FILE_SIZE
         if file_size > max_size:
-            logger.warning(f"{size_type}文件大小超限: {file_size} > {max_size}")
+            logger.warning(f"zip文件大小超限: {file_size} > {max_size}")
             raise HTTPException(
                 status_code=400,
-                detail=f"{size_type}文件大小超过限制({max_size // (1024*1024)}MB)"
+                detail=f"zip文件大小超过限制({max_size // (1024*1024)}MB)"
             )
         
-        # 根据文件类型进行详细验证
-        if is_video:
-            if not video_processor.validate_video_file(file, config):
-                logger.warning(f"视频文件验证失败: {file.filename}")
-                raise HTTPException(
-                    status_code=400,
-                    detail="视频文件格式无效或已损坏"
-                )
-        elif is_image:
-            if not image_processor.validate_image_file(file, config):
-                logger.warning(f"图像文件验证失败: {file.filename}")
-                raise HTTPException(
-                    status_code=400,
-                    detail="图像文件格式无效或已损坏"
-                )
-        elif is_archive:
-            # 验证zip文件
-            if not validate_zip_file(file):
-                logger.warning(f"压缩包文件验证失败: {file.filename}")
-                raise HTTPException(
-                    status_code=400,
-                    detail="压缩包文件格式无效或已损坏"
-                )
+        # 验证zip文件
+        if not validate_zip_file(file):
+            logger.warning(f"zip文件验证失败: {file.filename}")
+            raise HTTPException(
+                status_code=400,
+                detail="zip文件格式无效或已损坏"
+            )
         
         # 生成任务ID
         task_id = str(uuid.uuid4())
@@ -345,77 +395,55 @@ async def upload_file(
                 detail="创建任务目录失败"
             )
         
-        # 保存上传的文件到images目录
-        file_ext = Path(file.filename).suffix.lower()
-        n_images = 1  # 默认图像数量
-        
-        if is_archive:
-            # zip文件：先保存到临时位置，然后解压
-            temp_zip_path = images_dir.parent / f"temp_{file.filename}"
-            try:
-                with open(temp_zip_path, "wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
-                logger.info(f"zip文件保存成功: {temp_zip_path}")
-                
-                # 解压图像文件到images目录
-                n_images = extract_images_from_zip(temp_zip_path, images_dir)
-                
-                # 删除临时zip文件
+        # 处理zip文件：先保存到临时位置，然后解压
+        temp_zip_path = images_dir.parent / f"temp_{file.filename}"
+        try:
+            with open(temp_zip_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
+            logger.info(f"zip文件保存成功: {temp_zip_path}")
+            
+            # 解压图像文件到images目录
+            n_images = extract_images_from_zip(temp_zip_path, images_dir)
+            
+            # 删除临时zip文件
+            temp_zip_path.unlink()
+            
+            # 如果提供了points参数，执行分割预处理
+            if points:
+                try:
+                    logger.info(f"开始执行分割预处理，points参数: {points}")
+                    await run_segmentation_preprocessing(str(images_dir), points)
+                    logger.info("分割预处理完成")
+                except Exception as seg_e:
+                    logger.error(f"分割预处理失败: {seg_e}")
+                    # 分割失败不影响后续处理，只记录错误
+                    pass
+            
+        except Exception as e:
+            logger.error(f"处理zip文件失败: {e}")
+            # 清理文件
+            if temp_zip_path.exists():
                 temp_zip_path.unlink()
-                
-                file_path = images_dir  # 对于zip文件，file_path指向images目录
-                
-            except Exception as e:
-                logger.error(f"处理zip文件失败: {e}")
-                # 清理文件
-                if temp_zip_path.exists():
-                    temp_zip_path.unlink()
-                if scene_dir.exists():
-                    shutil.rmtree(scene_dir, ignore_errors=True)
-                raise HTTPException(
-                    status_code=500,
-                    detail="处理zip文件失败"
-                )
-        else:
-            # 单个文件处理
-            if is_image:
-                # 图像文件使用000000.ext格式
-                standard_filename = f"000000{file_ext}"
-            else:
-                # 视频文件保持原名，后续提取帧时会重命名
-                standard_filename = file.filename
-                
-            file_path = images_dir / standard_filename
-            try:
-                with open(file_path, "wb") as buffer:
-                    shutil.copyfileobj(file.file, buffer)
-                logger.info(f"文件保存成功: {file_path}")
-            except Exception as e:
-                logger.error(f"保存文件失败: {e}")
-                # 清理已创建的目录
-                if scene_dir.exists():
-                    shutil.rmtree(scene_dir, ignore_errors=True)
-                raise HTTPException(
-                    status_code=500,
-                    detail="保存文件失败"
-                )
+            if scene_dir.exists():
+                shutil.rmtree(scene_dir, ignore_errors=True)
+            raise HTTPException(
+                status_code=500,
+                detail="处理zip文件失败"
+            )
         
         # 创建任务
         try:
-            task_type = TaskType.VIDEO_RECONSTRUCTION if is_video else TaskType.IMAGE_RECONSTRUCTION
+            task_type = TaskType.IMAGE_RECONSTRUCTION
             task_params = {
                 "task_id": task_id,
-                "input_path": str(file_path),
+                "input_path": str(images_dir),
                 "scene_path": str(scene_dir),
                 "images_path": str(images_dir),
                 "filename": file.filename,
                 "file_size": file_size,
-                "file_type": "video" if is_video else "image",
+                "file_type": "multi_image",
                 "email": email
             }
-            
-            if is_video:
-                task_params["n_frames"] = config.N_FRAMES
             
             task_manager.create_task(task_type, task_params)
         except Exception as e:
@@ -430,12 +458,7 @@ async def upload_file(
         
         # 添加后台任务
         try:
-            if is_video:
-                background_tasks.add_task(process_video_task, task_id, file_path)
-            elif is_archive:
-                background_tasks.add_task(process_multi_image_task, task_id, n_images)
-            else:
-                background_tasks.add_task(process_image_task, task_id, file_path)
+            background_tasks.add_task(process_multi_image_task, task_id, n_images)
         except Exception as e:
             logger.error(f"添加后台任务失败: {e}")
             raise HTTPException(
@@ -444,10 +467,9 @@ async def upload_file(
             )
         
         logger.info(f"任务创建成功: {task_id}")
-        file_type_msg = "视频" if is_video else "图像"
         return UploadResponse(
             task_id=task_id,
-            message=f"{file_type_msg}上传成功，开始处理",
+            message=f"zip文件上传成功，包含{n_images}张图像，开始处理",
             status="pending"
         )
         
@@ -461,478 +483,6 @@ async def upload_file(
             detail="服务器内部错误"
         )
 
-async def process_video_task(task_id: str, video_path: Path):
-    """后台处理视频任务"""
-    logger.info(f"开始处理任务 {task_id}: {video_path}")
-    
-    try:
-        # 验证输入文件
-        if not video_path.exists():
-            raise FileNotFoundError(f"视频文件不存在: {video_path}")
-        
-        task_manager.update_task_status(task_id, TMTaskStatus.EXTRACTING)
-        task_manager.update_task_progress(
-            task_id, "提取帧", 1, 5,
-            {"message": "正在从视频中提取帧..."}
-        )
-        
-        # 创建输出目录
-        task_dir = video_path.parent  # 这是 assets/api_uploads/task_id/images/
-        scene_dir = task_dir.parent   # 这是 assets/api_uploads/task_id/
-        frames_dir = scene_dir / "images"
-        output_dir = config.OUTPUT_DIR / task_id
-        
-        try:
-            frames_dir.mkdir(parents=True, exist_ok=True)
-            output_dir.mkdir(parents=True, exist_ok=True)
-        except OSError as e:
-            raise Exception(f"创建目录失败: {e}")
-        
-        # 使用video_processor提取帧
-        try:
-            frames = video_processor.extract_frames_fps_based(
-                video_path, frames_dir, fps=1
-            )
-        except Exception as e:
-            logger.error(f"帧提取失败 {task_id}: {e}")
-            raise Exception(f"视频帧提取失败: {e}")
-        
-        # 检查提取的帧数（至少需要3帧进行三维重建）
-        if len(frames) < 3:
-            error_msg = f"提取的帧数不足: {len(frames)} < 3（三维重建最少需要3帧）"
-            logger.warning(f"任务 {task_id}: {error_msg}")
-            raise Exception(error_msg)
-        
-        logger.info(f"任务 {task_id}: 成功提取 {len(frames)} 帧")
-        task_manager.update_task_progress(
-            task_id, "帧提取完成", 2, 5,
-            {"message": f"成功提取{len(frames)}帧"}
-        )
-        
-        # 使用reconstruction_processor执行三维重建
-        try:
-            # 定义进度回调函数
-            def progress_callback(progress, message=""):
-                # 将进度转换为步骤信息
-                percentage = int(progress * 100)
-                task_manager.update_task_progress(task_id, message, percentage, 100, {"progress": progress})
-            
-            # 获取场景目录路径（scene_dir即为scene_path）
-            scene_path = scene_dir
-            
-            loop = asyncio.get_event_loop()
-            reconstruction_result = await loop.run_in_executor(
-                None, reconstruction_processor.process_reconstruction,
-                scene_path, progress_callback
-            )
-            
-            if reconstruction_result.success:
-                task_manager.update_task_status(task_id, TMTaskStatus.COMPLETED)
-                
-                # 设置任务结果数据，用于结果下载
-                ply_file_path = reconstruction_result.files.get('point_cloud', '')
-                
-                # PLY文件压缩处理
-                if ply_file_path and os.path.exists(ply_file_path):
-                    try:
-                        # 生成压缩文件路径
-                        compressed_ply_path = ply_file_path.replace('.ply', '.compressed.ply')
-                        
-                        # 构建压缩命令
-                        compress_cmd = [
-                            "/opt/glibc-2.38/lib/ld-linux-x86-64.so.2",
-                            "--library-path", "/opt/glibc-2.38/lib:/usr/lib/x86_64-linux-gnu",
-                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/node",
-                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/splat-transform",
-                            ply_file_path,
-                            compressed_ply_path
-                        ]
-                        
-                        logger.info(f"任务 {task_id}: 开始压缩PLY文件: {ply_file_path} -> {compressed_ply_path}")
-                        result = subprocess.run(compress_cmd, capture_output=True, text=True, timeout=300)
-                        
-                        if result.returncode == 0:
-                            # 压缩成功，删除原文件并更新路径
-                            original_size = os.path.getsize(ply_file_path)
-                            compressed_size = os.path.getsize(compressed_ply_path)
-                            compression_ratio = (1 - compressed_size / original_size) * 100
-                            
-                            logger.info(f"任务 {task_id}: PLY文件压缩成功，原大小: {original_size} bytes, 压缩后: {compressed_size} bytes, 压缩率: {compression_ratio:.1f}%")
-                            
-                            # 删除原文件
-                            os.remove(ply_file_path)
-                            # 更新文件路径为压缩后的文件
-                            ply_file_path = compressed_ply_path
-                        else:
-                            logger.error(f"任务 {task_id}: PLY文件压缩失败: {result.stderr}")
-                            logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
-                    except Exception as compress_e:
-                        logger.error(f"任务 {task_id}: PLY文件压缩过程出错: {compress_e}")
-                        logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
-                
-                # 上传PLY文件到公网服务器
-                public_url = None
-                if ply_file_path and os.path.exists(ply_file_path):
-                    try:
-                        # 构建scp命令，将文件重命名为taskid.compressed.ply
-                        remote_filename = f"{task_id}.compressed.ply"
-                        scp_command = [
-                            "sshpass", "-p", "RAs@z4uY!n",
-                            "scp", "-o", "StrictHostKeyChecking=no",
-                            ply_file_path,
-                            f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
-                        ]
-                        
-                        logger.info(f"任务 {task_id}: 开始上传PLY文件到公网服务器: {remote_filename}")
-                        result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
-                        
-                        if result.returncode == 0:
-                            public_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
-                            logger.info(f"任务 {task_id}: PLY文件上传成功，公网URL: {public_url}")
-                        else:
-                            logger.error(f"任务 {task_id}: PLY文件上传失败 - {result.stderr}")
-                    except subprocess.TimeoutExpired:
-                        logger.error(f"任务 {task_id}: PLY文件上传超时")
-                    except Exception as e:
-                        logger.error(f"任务 {task_id}: PLY文件上传异常 - {str(e)}")
-                
-                # 如果上传失败，设置默认公网URL为None，但仍然标记任务为完成
-                if not public_url:
-                    logger.warning(f"任务 {task_id}: PLY文件上传失败，但任务仍标记为完成")
-                
-                # 确保public_url存在才设置任务结果
-                if public_url:
-                    task_manager.set_task_result(task_id, {
-                        "output_path": reconstruction_result.output_dir,
-                        "ply_file_path": ply_file_path,
-                        "public_url": public_url,  # 添加公网URL
-                        "files": reconstruction_result.files,
-                        "metrics": reconstruction_result.metrics,
-                        "processing_time": reconstruction_result.processing_time
-                    })
-                else:
-                    # 如果没有公网URL，任务标记为失败
-                    raise Exception("PLY文件上传到公网服务器失败")
-                
-                logger.info(f"任务 {task_id}: 三维重建完成，输出目录: {reconstruction_result.output_dir}")
-                
-                # 任务成功完成，发送邮件通知
-                task = task_manager.get_task(task_id)
-                if task and task.input_data.get('email'):
-                    try:
-                        # 使用Supabase邮件通知器发送完成通知
-                        # 创建新的事件循环任务来处理异步邮件发送
-                        loop = asyncio.get_event_loop()
-                        email_task = loop.create_task(send_training_completion_email(
-                            email=task.input_data.get('email'),
-                            task_id=task_id,
-                            success=True,
-                            processing_time=reconstruction_result.processing_time,
-                            public_url=public_url  # 传递公网URL而不是相对路径
-                        ))
-                        # 等待邮件发送完成，但设置超时
-                        await asyncio.wait_for(email_task, timeout=60.0)
-                        logger.info(f"任务 {task_id}: 邮件通知发送成功")
-                    except Exception as e:
-                        logger.error(f"发送邮件通知失败 {task_id}: {e}")
-            else:
-                raise Exception(reconstruction_result.error_message or "视频三维重建失败")
-        except Exception as e:
-            logger.error(f"三维重建失败 {task_id}: {e}")
-            raise Exception(f"三维重建处理失败: {e}")
-        
-    except FileNotFoundError as e:
-        logger.error(f"文件错误 {task_id}: {e}")
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, str(e))
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                # 创建新的事件循环任务来处理异步邮件发送
-                loop = asyncio.get_event_loop()
-                email_task = loop.create_task(send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=str(e)
-                ))
-                # 等待邮件发送完成，但设置超时
-                await asyncio.wait_for(email_task, timeout=60.0)
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-    except PermissionError as e:
-        logger.error(f"权限错误 {task_id}: {e}")
-        error_msg = f"权限不足: {e}"
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, error_msg)
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                # 创建新的事件循环任务来处理异步邮件发送
-                loop = asyncio.get_event_loop()
-                email_task = loop.create_task(send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=error_msg
-                ))
-                # 等待邮件发送完成，但设置超时
-                await asyncio.wait_for(email_task, timeout=60.0)
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-    except Exception as e:
-        logger.error(f"任务处理失败 {task_id}: {e}")
-        logger.error(f"异常详情: {traceback.format_exc()}")
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, str(e))
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                # 创建新的事件循环任务来处理异步邮件发送
-                loop = asyncio.get_event_loop()
-                email_task = loop.create_task(send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=str(e)
-                ))
-                # 等待邮件发送完成，但设置超时
-                await asyncio.wait_for(email_task, timeout=60.0)
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-
-async def process_image_task(task_id: str, image_path: Path):
-    """后台处理图像任务"""
-    logger.info(f"开始处理图像任务 {task_id}: {image_path}")
-    
-    try:
-        # 验证输入文件
-        if not image_path.exists():
-            raise FileNotFoundError(f"图像文件不存在: {image_path}")
-        
-        task_manager.update_task_status(task_id, TMTaskStatus.EXTRACTING)
-        task_manager.update_task_progress(
-            task_id, "处理图像", 1, 5,
-            {"message": "正在处理图像文件..."}
-        )
-        
-        # 获取场景目录路径 (assets/api_uploads/task_id/)
-        scene_path = image_path.parent.parent  # 从images目录向上两级到scene目录
-        
-        # 验证目录结构
-        images_dir = scene_path / "images"
-        if not images_dir.exists():
-            raise Exception(f"Images目录不存在: {images_dir}")
-        
-        logger.info(f"任务 {task_id}: 使用场景路径 {scene_path}")
-        task_manager.update_task_progress(
-            task_id, "准备三维重建", 2, 5,
-            {"message": "准备三维重建..."}
-        )
-        
-        # 使用reconstruction_processor执行三维重建
-        try:
-            # 定义进度回调函数
-            def progress_callback(progress, message=""):
-                # 将进度转换为步骤信息
-                percentage = int(progress * 100)
-                task_manager.update_task_progress(task_id, message, percentage, 100, {"progress": progress})
-            
-            loop = asyncio.get_event_loop()
-            reconstruction_result = await loop.run_in_executor(
-                None, reconstruction_processor.process_reconstruction,
-                str(scene_path), progress_callback
-            )
-            
-            if reconstruction_result.success:
-                task_manager.update_task_status(task_id, TMTaskStatus.COMPLETED)
-                task_manager.update_task_progress(
-                    task_id, "三维重建完成", 5, 5,
-                    {
-                        "message": "三维重建完成",
-                        "output_dir": reconstruction_result.output_dir,
-                        "processing_time": reconstruction_result.processing_time,
-                        "files": reconstruction_result.files
-                    }
-                )
-                
-                # 设置任务结果数据，用于结果下载
-                ply_file_path = reconstruction_result.files.get('point_cloud', '')
-                
-                # PLY文件压缩处理
-                if ply_file_path and os.path.exists(ply_file_path):
-                    try:
-                        # 生成压缩文件路径
-                        compressed_ply_path = ply_file_path.replace('.ply', '.compressed.ply')
-                        
-                        # 构建压缩命令
-                        compress_cmd = [
-                            "/opt/glibc-2.38/lib/ld-linux-x86-64.so.2",
-                            "--library-path", "/opt/glibc-2.38/lib:/usr/lib/x86_64-linux-gnu",
-                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/node",
-                            "/home/livablecity/.nvm/versions/node/v22.17.1/bin/splat-transform",
-                            ply_file_path,
-                            compressed_ply_path
-                        ]
-                        
-                        logger.info(f"任务 {task_id}: 开始压缩PLY文件: {ply_file_path} -> {compressed_ply_path}")
-                        result = subprocess.run(compress_cmd, capture_output=True, text=True, timeout=300)
-                        
-                        if result.returncode == 0:
-                            # 压缩成功，删除原文件并更新路径
-                            original_size = os.path.getsize(ply_file_path)
-                            compressed_size = os.path.getsize(compressed_ply_path)
-                            compression_ratio = (1 - compressed_size / original_size) * 100
-                            
-                            logger.info(f"任务 {task_id}: PLY文件压缩成功，原大小: {original_size} bytes, 压缩后: {compressed_size} bytes, 压缩率: {compression_ratio:.1f}%")
-                            
-                            # 删除原文件
-                            os.remove(ply_file_path)
-                            # 更新文件路径为压缩后的文件
-                            ply_file_path = compressed_ply_path
-                        else:
-                            logger.error(f"任务 {task_id}: PLY文件压缩失败: {result.stderr}")
-                            logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
-                    except Exception as compress_e:
-                        logger.error(f"任务 {task_id}: PLY文件压缩过程出错: {compress_e}")
-                        logger.info(f"任务 {task_id}: 将使用原始PLY文件进行上传")
-                
-                # 上传PLY文件到公网服务器
-                public_url = None
-                if ply_file_path and os.path.exists(ply_file_path):
-                    try:
-                        # 构建scp命令，将文件重命名为taskid.compressed.ply
-                        remote_filename = f"{task_id}.compressed.ply"
-                        scp_command = [
-                            "sshpass", "-p", "RAs@z4uY!n",
-                            "scp", "-o", "StrictHostKeyChecking=no",
-                            ply_file_path,
-                            f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
-                        ]
-                        
-                        logger.info(f"任务 {task_id}: 开始上传PLY文件到公网服务器: {remote_filename}")
-                        result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
-                        
-                        if result.returncode == 0:
-                            public_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
-                            logger.info(f"任务 {task_id}: PLY文件上传成功，公网URL: {public_url}")
-                        else:
-                            logger.error(f"任务 {task_id}: PLY文件上传失败 - {result.stderr}")
-                    except subprocess.TimeoutExpired:
-                        logger.error(f"任务 {task_id}: PLY文件上传超时")
-                    except Exception as e:
-                        logger.error(f"任务 {task_id}: PLY文件上传异常 - {str(e)}")
-                
-                # 如果上传失败，设置默认公网URL为None，但仍然标记任务为完成
-                if not public_url:
-                    logger.warning(f"任务 {task_id}: PLY文件上传失败，但任务仍标记为完成")
-                
-                # 确保public_url存在才设置任务结果
-                if public_url:
-                    task_manager.set_task_result(task_id, {
-                        "output_path": reconstruction_result.output_dir,
-                        "ply_file_path": ply_file_path,
-                        "public_url": public_url,  # 添加公网URL
-                        "files": reconstruction_result.files,
-                        "metrics": reconstruction_result.metrics,
-                        "processing_time": reconstruction_result.processing_time
-                    })
-                else:
-                    # 如果没有公网URL，任务标记为失败
-                    raise Exception("PLY文件上传到公网服务器失败")
-                
-                logger.info(f"任务 {task_id}: 三维重建完成，输出目录: {reconstruction_result.output_dir}")
-                
-                # 发送成功邮件通知
-                task = task_manager.get_task(task_id)
-                logger.info(f"任务 {task_id}: 检查邮件发送条件 - task存在: {task is not None}")
-                if task:
-                    logger.info(f"任务 {task_id}: input_data: {task.input_data}")
-                    email = task.input_data.get('email')
-                    logger.info(f"任务 {task_id}: 邮箱地址: {email}")
-                if task and task.input_data.get('email'):
-                    try:
-                        # 构建下载URL                        
-                        logger.info(f"任务 {task_id}: 开始发送邮件通知到 {task.input_data.get('email')}")
-                        
-                        # 创建新的事件循环任务来处理异步邮件发送
-                        loop = asyncio.get_event_loop()
-                        email_task = loop.create_task(send_training_completion_email(
-                            email=task.input_data.get('email'),
-                            task_id=task_id,
-                            success=True,
-                            processing_time=reconstruction_result.processing_time,
-                            public_url=public_url
-                        ))
-                        # 等待邮件发送完成，但设置超时
-                        await asyncio.wait_for(email_task, timeout=60.0)
-                        logger.info(f"任务 {task_id}: 邮件通知发送成功")
-                    except Exception as email_e:
-                        logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-                else:
-                    logger.info(f"任务 {task_id}: 跳过邮件发送 - 无邮箱地址或任务不存在")
-            else:
-                raise Exception(reconstruction_result.error_message or "三维重建失败")
-                
-        except Exception as e:
-            logger.error(f"三维重建失败 {task_id}: {e}")
-            raise Exception(f"三维重建处理失败: {e}")
-        
-    except FileNotFoundError as e:
-        logger.error(f"文件错误 {task_id}: {e}")
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, str(e))
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                # 创建新的事件循环任务来处理异步邮件发送
-                loop = asyncio.get_event_loop()
-                email_task = loop.create_task(send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=str(e)
-                ))
-                # 等待邮件发送完成，但设置超时
-                await asyncio.wait_for(email_task, timeout=60.0)
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-    except PermissionError as e:
-        logger.error(f"权限错误 {task_id}: {e}")
-        error_msg = f"权限不足: {e}"
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, error_msg)
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                # 创建新的事件循环任务来处理异步邮件发送
-                loop = asyncio.get_event_loop()
-                email_task = loop.create_task(send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=error_msg
-                ))
-                # 等待邮件发送完成，但设置超时
-                await asyncio.wait_for(email_task, timeout=60.0)
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
-    except Exception as e:
-        logger.error(f"图像任务处理失败 {task_id}: {e}")
-        logger.error(f"异常详情: {traceback.format_exc()}")
-        task_manager.update_task_status(task_id, TMTaskStatus.FAILED, str(e))
-        # 发送失败邮件通知
-        task = task_manager.get_task(task_id)
-        if task and task.input_data.get('email'):
-            try:
-                await send_training_completion_email(
-                    email=task.input_data.get('email'),
-                    task_id=task_id,
-                    success=False,
-                    error_message=str(e)
-                )
-            except Exception as email_e:
-                logger.error(f"发送邮件通知失败 {task_id}: {email_e}")
 
 async def process_multi_image_task(task_id: str, n_images: int):
     """后台处理多图像重建任务（来自zip文件）"""
@@ -955,6 +505,54 @@ async def process_multi_image_task(task_id: str, n_images: int):
         image_files = list(images_dir.glob("*.jpg")) + list(images_dir.glob("*.jpeg")) + list(images_dir.glob("*.png"))
         if len(image_files) < 3:
             raise Exception(f"图像数量不足: {len(image_files)} < 3（三维重建最少需要3张图像）")
+            
+        # 上传第一张图像到公网服务器（压缩为JPEG格式）
+        first_image_url = None
+        if image_files:
+            try:
+                first_image_path = image_files[2]
+                
+                # 创建临时JPEG文件
+                temp_jpeg_path = Path(tempfile.mkdtemp()) / f"{task_id}.jpg"
+                
+                # 使用PIL压缩图像为JPEG格式
+                with Image.open(first_image_path) as img:
+                    # 如果是RGBA模式，转换为RGB
+                    if img.mode == 'RGBA':
+                        img = img.convert('RGB')
+                    # 保存为JPEG格式，质量设为85%
+                    img.save(temp_jpeg_path, 'JPEG', quality=85, optimize=True)
+                
+                # 构建scp命令，使用固定的.jpg扩展名
+                remote_filename = f"{task_id}.jpg"
+                scp_command = [
+                    "sshpass", "-p", "RAs@z4uY!n",
+                    "scp", "-o", "StrictHostKeyChecking=no",
+                    str(temp_jpeg_path),
+                    f"Administrator@10.100.0.164:/E:/SceneGEN_data/{remote_filename}"
+                ]
+                
+                logger.info(f"任务 {task_id}: 开始上传压缩后的第一张图像到公网服务器: {remote_filename}")
+                result = subprocess.run(scp_command, capture_output=True, text=True, timeout=300)
+                
+                if result.returncode == 0:
+                    first_image_url = f"https://livablecitylab.hkust-gz.edu.cn/SceneGEN_data/{remote_filename}"
+                    logger.info(f"任务 {task_id}: 第一张图像上传成功，公网URL: {first_image_url}")
+                    task_manager.set_field(task_id,"preview_image_url", first_image_url)
+                else:
+                    logger.error(f"任务 {task_id}: 第一张图像上传失败 - {result.stderr}")
+                
+                # 清理临时文件
+                try:
+                    temp_jpeg_path.unlink()
+                    temp_jpeg_path.parent.rmdir()
+                except Exception as cleanup_e:
+                    logger.warning(f"任务 {task_id}: 清理临时文件失败 - {str(cleanup_e)}")
+                    
+            except subprocess.TimeoutExpired:
+                logger.error(f"任务 {task_id}: 第一张图像上传超时")
+            except Exception as e:
+                logger.error(f"任务 {task_id}: 第一张图像上传异常 - {str(e)}")
             
         task_manager.update_task_status(task_id, TMTaskStatus.EXTRACTING)
         task_manager.update_task_progress(
@@ -1067,13 +665,17 @@ async def process_multi_image_task(task_id: str, n_images: int):
                 
                 # 确保public_url存在才设置任务结果
                 if public_url:
+                    # 获取最终文件大小
+                    final_file_size = compressed_size if compressed_size else 0
+                    
                     task_manager.set_task_result(task_id, {
                         "output_path": reconstruction_result.output_dir,
                         "ply_file_path": ply_file_path,
                         "public_url": public_url,  # 添加公网URL
                         "files": reconstruction_result.files,
                         "metrics": reconstruction_result.metrics,
-                        "processing_time": reconstruction_result.processing_time
+                        "processing_time": reconstruction_result.processing_time,
+                        "file_size": final_file_size  # 添加文件大小
                     })
                 else:
                     # 如果没有公网URL，任务标记为失败

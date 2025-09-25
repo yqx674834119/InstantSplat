@@ -68,6 +68,7 @@ cloudflared tunnel route dns my-service app.scenegen.cn
 启动服务：
 ```
 nohup cloudflared tunnel run my-service > cloudflared.log 2>&1 &
+<!-- ps aux | grep '[c]loudflared tunnel run my-service' -->
 ```
 
 ## 8. 访问测试

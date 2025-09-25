@@ -76,8 +76,8 @@ class APITester:
         output_dir.mkdir(exist_ok=True)
         
         # 复制图像文件到输出目录
-        for i, img_file in enumerate(image_files[:8]):  # 最多使用8张图像
-            dest_path = output_dir / f"test_image_{i+1:02d}.jpg"
+        for i, img_file in enumerate(image_files):  # 最多使用8张图像
+            dest_path = output_dir / f"test_image_{i+1:02d}.png"
             shutil.copy2(img_file, dest_path)
             
         return output_dir
@@ -94,7 +94,7 @@ class APITester:
         zip_path = images_dir.parent / "test_images_complete.zip"
         
         with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zipf:
-            for img_file in images_dir.glob("*.jpg"):
+            for img_file in images_dir.glob("*.png"):
                 zipf.write(img_file, img_file.name)
                 
         logger.info(f"创建测试zip文件: {zip_path} ({zip_path.stat().st_size} bytes)")

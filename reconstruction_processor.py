@@ -141,9 +141,9 @@ class ReconstructionProcessor:
             result_files = self._collect_training_results(str(output_dir))
             metrics = self._extract_metrics(str(output_dir))
             
-            # 6. 异步启动渲染生成（不等待完成）
-            self._update_progress(progress_callback, 0.90, "启动渲染任务...")
-            self._start_async_rendering(str(scene_path), str(output_dir), n_views)
+            # # 6. 异步启动渲染生成（不等待完成）
+            # self._update_progress(progress_callback, 0.90, "启动渲染任务...")
+            # self._start_async_rendering(str(scene_path), str(output_dir), n_views)
             
             processing_time = time.time() - start_time
             

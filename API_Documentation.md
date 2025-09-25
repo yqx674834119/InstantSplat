@@ -1,44 +1,108 @@
-# InstantSplat 3D Reconstruction API 文档
+# InstantSplat 3D Reconstruction API 接口文档
 
 ## 概述
 
-InstantSplat 3D Reconstruction API 是一个基于 FastAPI 的 RESTful API 服务，提供视频和图像的三维重建功能。该 API 支持多种文件格式的上传，并通过异步处理提供高效的三维重建服务。
+InstantSplat 3D Reconstruction API 是一个基于 FastAPI 的三维重建服务，支持从多张图像生成三维点云模型。API 提供了文件上传、任务状态查询、结果获取等功能。
 
-**服务信息：**
-- 版本：1.0.0
-- 基础URL：`http://localhost:3080`
+**基础信息：**
+- 服务地址：`https://app.scenegen.cn`
+- API 版本：`1.0.0`
 - 协议：HTTP/HTTPS
 - 数据格式：JSON
 
----
+## 数据模型
 
-## 接口列表
+### TaskStatusResponse
+任务状态响应模型
+```json
+{
+  "task_id": "string",
+  "status": "string",
+  "progress": 0.0,
+  "current_step": "string",
+  "message": "string",
+  "created_at": "2024-01-01T00:00:00",
+  "updated_at": "2024-01-01T00:00:00",
+  "result_path": "string",
+  "error_message": "string",
+  "estimated_time_remaining": 0.0,
+  "processing_time": 0.0
+}
+```
 
-| 序号 | 接口路径 | 方法 | 功能描述 |
-|------|----------|------|----------|
-| 1 | `/` | GET | 健康检查 |
-| 2 | `/upload` | POST | 上传文件并开始三维重建 |
-| 3 | `/status/{task_id}` | GET | 查询任务状态 |
-| 4 | `/tasks` | GET | 获取所有任务列表 |
-| 5 | `/result/{task_id}` | GET | 下载处理结果 |
-| 6 | `/task/{task_id}` | DELETE | 删除任务 |
+**字段说明：**
+- `task_id`: 任务唯一标识符
+- `status`: 任务状态（pending, processing, completed, failed）
+- `progress`: 进度百分比（0-100）
+- `current_step`: 当前处理步骤
+- `message`: 状态消息
+- `created_at`: 任务创建时间
+- `updated_at`: 任务更新时间
+- `result_path`: 结果文件路径（可选）
+- `error_message`: 错误消息（可选）
+- `estimated_time_remaining`: 预计剩余时间（可选）
+- `processing_time`: 处理耗时（可选）
 
----
+### UploadResponse
+文件上传响应模型
+```json
+{
+  "task_id": "string",
+  "message": "string",
+  "status": "string"
+}
+```
 
-## 接口详细说明
+**字段说明：**
+- `task_id`: 生成的任务ID
+- `message`: 响应消息
+- `status`: 任务状态
+
+### FileInfo
+文件信息模型
+```json
+{
+  "file_id": "string",
+  "filename": "string",
+  "file_size": 0,
+  "file_type": "string",
+  "download_url": "string"
+}
+```
+
+**字段说明：**
+- `file_id`: 文件唯一标识符
+- `filename`: 文件名
+- `file_size`: 文件大小（字节）
+- `file_type`: 文件类型
+- `download_url`: 下载链接
+
+### ResultResponse
+结果响应模型
+```json
+{
+  "task_id": "string",
+  "status": "string",
+  "files": [],
+  "message": "string"
+}
+```
+
+**字段说明：**
+- `task_id`: 任务ID
+- `status`: 任务状态
+- `files`: 可下载的文件列表（FileInfo数组）
+- `message`: 响应消息
+
+## API 端点
 
 ### 1. 健康检查
 
-**接口描述：** 检查 API 服务是否正常运行
+**GET** `/`
 
-**请求信息：**
-```
-GET /
-```
+检查API服务是否正常运行。
 
-**请求参数：** 无
-
-**响应格式：**
+**响应：**
 ```json
 {
   "message": "InstantSplat 3D Reconstruction API is running",
@@ -46,92 +110,219 @@ GET /
 }
 ```
 
-**状态码：**
-- `200 OK`：服务正常运行
-
----
-
 ### 2. 上传文件并开始三维重建
 
-**接口描述：** 上传图像、视频或压缩包文件，并启动三维重建任务
+**POST** `/upload`
 
-**请求信息：**
-```
-POST /upload?email={email}
-Content-Type: multipart/form-data
-```
+上传包含多个图像的zip文件并开始三维重建处理。
 
 **请求参数：**
+- `file` (FormData): 包含多个图像的zip文件（必需）
+- `email` (FormData): 邮件地址，用于接收处理完成通知（使用当前用户emial/可选）
+- `points` (FormData): 分割点参数，JSON字符串格式（可选）
 
-**查询参数（URL参数）：**
+**文件要求：**
+- 格式：仅支持 `.zip` 格式
+- 大小：不超过配置的最大文件大小限制
+- 内容：包含至少3张图像文件（.jpg, .jpeg, .png）
 
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `email` | String | 否 | 邮箱地址，用于接收处理完成通知 |
+**points参数格式：**
+```json
+"[(630, 283, 1, 0)]"
+```
+或多个点：
+```json
+"[(630, 283, 1, 0), (400, 200, 1, 1)]"
+```
 
-**表单数据参数：**
+每个点的格式为 `(x, y, label, frame)`：
+- `x, y`: 点击坐标
+- `label`: 标签（通常为1）
+- `frame`: 帧编号
 
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `file` | File | 是 | 上传的文件（图像/视频/压缩包） |
+**响应：** `UploadResponse`
 
-**支持的文件格式：**
-- **视频格式：** `.mp4`, `.mov`, `.avi`
-- **图像格式：** `.jpg`, `.jpeg`, `.png`, `.bmp`, `.tiff`, `.webp`
-- **压缩包格式：** `.zip`（包含多张图像）
+**状态码：**
+- `200`: 上传成功
+- `400`: 请求参数错误（文件格式不支持、文件过大等）
+- `500`: 服务器内部错误
 
-**文件大小限制：**
-- 视频文件：最大 500MB
-- 图像文件：最大 100MB
-- 压缩包文件：最大 500MB
-- 图像分辨率：256×256 至 4096×4096
+### 3. 查询任务状态
 
-**响应格式：**
+**GET** `/status/{task_id}`
+
+查询指定任务的处理状态和进度。
+
+**路径参数：**
+- `task_id`: 任务ID
+
+**响应：** `TaskStatusResponse`
+
+**状态码：**
+- `200`: 查询成功
+- `404`: 任务不存在
+
+### 4. 获取所有任务列表
+
+**GET** `/tasks`
+
+获取所有任务的状态列表。
+
+**响应：**
+```json
+{
+  "tasks": [
+    {
+      "task_id": "string",
+      "status": "string",
+      "progress": 0.0,
+      "created_at": "2024-01-01T00:00:00",
+      "updated_at": "2024-01-01T00:00:00"
+    }
+  ]
+}
+```
+
+**状态码：**
+- `200`: 查询成功
+
+### 5. 获取处理结果
+
+**GET** `/result/{task_id}`
+
+获取任务处理结果的文件信息和下载链接。
+
+**路径参数：**
+- `task_id`: 任务ID
+
+**响应：** `ResultResponse`
+
+**状态码：**
+- `200`: 获取成功
+- `400`: 任务尚未完成
+- `404`: 任务不存在或结果不存在
+- `500`: PLY文件上传到公网服务器失败
+
+### 6. 删除任务
+
+**DELETE** `/task/{task_id}`
+
+删除指定的任务及其相关文件。
+
+**路径参数：**
+- `task_id`: 任务ID
+
+**响应：**
+```json
+{
+  "message": "任务已删除",
+  "task_id": "string",
+  "deleted_directories": ["string"]
+}
+```
+
+**状态码：**
+- `200`: 删除成功
+- `404`: 任务不存在
+- `500`: 删除失败
+
+## 任务状态说明
+
+任务在处理过程中会经历以下状态：
+
+1. **pending**: 任务已创建，等待处理
+2. **processing**: 任务正在处理中
+   - extracting: 正在提取图像
+   - reconstructing: 正在进行三维重建
+3. **completed**: 任务处理完成
+4. **failed**: 任务处理失败
+
+## 错误处理
+
+API 使用标准的 HTTP 状态码和 JSON 格式的错误响应：
+
+```json
+{
+  "detail": "错误描述",
+  "error_type": "异常类型",
+  "message": "详细错误信息"
+}
+```
+
+**常见错误码：**
+- `400`: 请求参数错误
+- `404`: 资源不存在
+- `422`: 数据验证失败
+- `500`: 服务器内部错误
+
+## 使用流程
+
+1. **上传文件**: 调用 `POST /upload` 上传zip文件
+2. **查询状态**: 使用返回的 `task_id` 调用 `GET /status/{task_id}` 查询处理进度
+3. **获取结果**: 任务完成后调用 `GET /result/{task_id}` 获取下载链接
+4. **清理任务**: 可选择调用 `DELETE /task/{task_id}` 删除任务
+
+## 注意事项
+
+1. **文件格式**: 仅支持zip格式的压缩文件
+2. **图像要求**: zip文件中至少包含3张图像文件
+3. **异步处理**: 三维重建是异步处理，需要轮询状态接口获取进度
+4. **邮件通知**: 提供邮箱地址可在任务完成时收到邮件通知
+5. **结果存储**: 处理完成的PLY文件会上传到公网服务器供下载
+6. **任务清理**: 建议在获取结果后删除不需要的任务以释放存储空间
+
+## 请求和响应示例
+
+### 1. 上传文件示例
+
+**使用 curl 上传文件：**
+```bash
+curl -X POST "http://localhost:8003/upload" \
+  -F "file=@images.zip" \
+  -F "email=user@example.com" \
+  -F "points=[(630, 283, 1, 0), (400, 200, 1, 1)]"
+```
+
+**使用 JavaScript 上传文件：**
+```javascript
+const formData = new FormData();
+formData.append('file', fileInput.files[0]);
+formData.append('email', 'user@example.com');
+formData.append('points', '[(630, 283, 1, 0)]');
+
+const response = await fetch('http://localhost:8003/upload', {
+  method: 'POST',
+  body: formData
+});
+
+const result = await response.json();
+console.log(result);
+```
+
+**响应示例：**
 ```json
 {
   "task_id": "550e8400-e29b-41d4-a716-446655440000",
-  "message": "视频上传成功，开始处理",
+  "message": "文件上传成功，开始处理",
   "status": "pending"
 }
 ```
 
-**状态码：**
-- `200 OK`：文件上传成功
-- `400 Bad Request`：文件格式不支持、文件大小超限、文件损坏等
-- `500 Internal Server Error`：服务器内部错误
+### 2. 查询任务状态示例
 
-**错误响应示例：**
-```json
-{
-  "detail": "不支持的文件格式。支持的格式: .mp4, .mov, .avi, .jpg, .jpeg, .png, .bmp, .tiff, .webp, .zip"
-}
+**请求：**
+```bash
+curl -X GET "http://localhost:8003/status/550e8400-e29b-41d4-a716-446655440000"
 ```
 
----
-
-### 3. 查询任务状态
-
-**接口描述：** 查询指定任务的处理状态和进度
-
-**请求信息：**
-```
-GET /status/{task_id}
-```
-
-**路径参数：**
-
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `task_id` | String | 是 | 任务唯一标识符 |
-
-**响应格式：**
+**响应示例（处理中）：**
 ```json
 {
   "task_id": "550e8400-e29b-41d4-a716-446655440000",
   "status": "processing",
   "progress": 65.5,
-  "current_step": "三维重建训练中",
-  "message": "正在进行Gaussian Splatting训练...",
+  "current_step": "reconstructing",
+  "message": "正在进行三维重建...",
   "created_at": "2024-01-15T10:30:00Z",
   "updated_at": "2024-01-15T10:35:30Z",
   "result_path": null,
@@ -141,30 +332,31 @@ GET /status/{task_id}
 }
 ```
 
-**任务状态说明：**
-- `pending`：等待处理
-- `processing`：处理中
-- `completed`：处理完成
-- `failed`：处理失败
-
-**状态码：**
-- `200 OK`：查询成功
-- `404 Not Found`：任务不存在
-
----
-
-### 4. 获取所有任务列表
-
-**接口描述：** 获取所有任务的状态列表
-
-**请求信息：**
-```
-GET /tasks
+**响应示例（已完成）：**
+```json
+{
+  "task_id": "550e8400-e29b-41d4-a716-446655440000",
+  "status": "completed",
+  "progress": 100.0,
+  "current_step": "completed",
+  "message": "三维重建完成",
+  "created_at": "2024-01-15T10:30:00Z",
+  "updated_at": "2024-01-15T10:40:00Z",
+  "result_path": "/output_api/550e8400-e29b-41d4-a716-446655440000/point_cloud.ply",
+  "error_message": null,
+  "estimated_time_remaining": 0.0,
+  "processing_time": 600.0
+}
 ```
 
-**请求参数：** 无
+### 3. 获取任务列表示例
 
-**响应格式：**
+**请求：**
+```bash
+curl -X GET "http://localhost:8003/tasks"
+```
+
+**响应示例：**
 ```json
 {
   "tasks": [
@@ -186,27 +378,14 @@ GET /tasks
 }
 ```
 
-**状态码：**
-- `200 OK`：查询成功
+### 4. 获取处理结果示例
 
----
-
-### 5. 获取处理结果信息
-
-**接口描述：** 获取任务处理完成后的文件信息和下载链接
-
-**请求信息：**
-```
-GET /result/{task_id}
+**请求：**
+```bash
+curl -X GET "http://localhost:8003/result/550e8400-e29b-41d4-a716-446655440000"
 ```
 
-**路径参数：**
-
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `task_id` | String | 是 | 任务唯一标识符 |
-
-**响应格式：**
+**响应示例：**
 ```json
 {
   "task_id": "550e8400-e29b-41d4-a716-446655440000",
@@ -217,90 +396,21 @@ GET /result/{task_id}
       "filename": "point_cloud_550e8400-e29b-41d4-a716-446655440000.ply",
       "file_size": 10485760,
       "file_type": "application/octet-stream",
-      "download_url": "/download/550e8400-e29b-41d4-a716-446655440000_point_cloud"
+      "download_url": "https://public-server.com/files/point_cloud_550e8400-e29b-41d4-a716-446655440000.ply"
     }
   ],
   "message": "结果文件准备就绪"
 }
 ```
 
-**响应字段说明：**
-- `task_id`：任务ID
-- `status`：任务状态
-- `files`：可下载的文件列表
-  - `file_id`：文件唯一标识符
-  - `filename`：文件名
-  - `file_size`：文件大小（字节）
-  - `file_type`：文件MIME类型
-  - `download_url`：下载链接
-- `message`：响应消息
+### 5. 删除任务示例
 
-**状态码：**
-- `200 OK`：获取成功
-- `400 Bad Request`：任务尚未完成
-- `404 Not Found`：任务不存在或结果文件不存在
-- `500 Internal Server Error`：文件访问错误
-
-**错误响应示例：**
-```json
-{
-  "detail": "任务尚未完成"
-}
+**请求：**
+```bash
+curl -X DELETE "http://localhost:8003/task/550e8400-e29b-41d4-a716-446655440000"
 ```
 
----
-
-### 6. 下载文件
-
-**接口描述：** 根据文件ID下载具体文件
-
-**请求信息：**
-```
-GET /download/{file_id}
-```
-
-**路径参数：**
-
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `file_id` | String | 是 | 文件唯一标识符（格式：{task_id}_{file_type}） |
-
-**响应格式：**
-- **成功时：** 返回文件二进制流
-- **Content-Type：** `application/octet-stream`
-- **Content-Disposition：** `attachment; filename="{filename}"`
-
-**状态码：**
-- `200 OK`：文件下载成功
-- `400 Bad Request`：无效的文件ID格式或不支持的文件类型
-- `404 Not Found`：任务不存在或文件不存在
-- `500 Internal Server Error`：文件访问错误
-
-**错误响应示例：**
-```json
-{
-  "detail": "无效的文件ID格式"
-}
-```
-
----
-
-### 7. 删除任务
-
-**接口描述：** 删除指定任务及其相关文件
-
-**请求信息：**
-```
-DELETE /task/{task_id}
-```
-
-**路径参数：**
-
-| 参数名 | 类型 | 必填 | 描述 |
-|--------|------|------|------|
-| `task_id` | String | 是 | 任务唯一标识符 |
-
-**响应格式：**
+**响应示例：**
 ```json
 {
   "message": "任务已删除",
@@ -313,201 +423,168 @@ DELETE /task/{task_id}
 }
 ```
 
-**状态码：**
-- `200 OK`：删除成功
-- `404 Not Found`：任务不存在
-- `500 Internal Server Error`：删除过程中发生错误
+### 6. 错误响应示例
 
----
-
-## 错误代码说明
-
-### HTTP 状态码
-
-| 状态码 | 说明 | 常见原因 |
-|--------|------|----------|
-| 200 | OK | 请求成功 |
-| 400 | Bad Request | 请求参数错误、文件格式不支持、文件大小超限 |
-| 404 | Not Found | 任务不存在、结果文件不存在 |
-| 422 | Unprocessable Entity | 请求数据验证失败 |
-| 500 | Internal Server Error | 服务器内部错误 |
-
-### 业务错误代码
-
-| 错误信息 | 描述 | 解决方案 |
-|----------|------|----------|
-| "文件名不能为空" | 上传文件缺少文件名 | 确保上传的文件有有效的文件名 |
-| "不支持的文件格式" | 文件格式不在支持列表中 | 使用支持的文件格式 |
-| "文件为空" | 上传的文件大小为0 | 检查文件是否损坏 |
-| "文件大小超过限制" | 文件大小超过最大限制 | 压缩文件或使用较小的文件 |
-| "视频文件格式无效或已损坏" | 视频文件无法解析 | 检查视频文件完整性 |
-| "图像文件格式无效或已损坏" | 图像文件无法解析 | 检查图像文件完整性 |
-| "压缩包文件格式无效或已损坏" | ZIP文件无法解压 | 检查ZIP文件完整性 |
-| "任务不存在" | 指定的任务ID不存在 | 检查任务ID是否正确 |
-| "任务尚未完成" | 尝试下载未完成任务的结果 | 等待任务完成后再下载 |
-| "结果文件不存在" | 任务完成但结果文件丢失 | 联系管理员检查服务器状态 |
-
----
-
-## 使用示例
-
-### 1. 上传视频文件
-
-```bash
-curl -X POST "http://localhost:3080/upload?email=user@example.com" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@example_video.mp4"
-```
-
-**响应：**
+**文件格式错误：**
 ```json
 {
-  "task_id": "550e8400-e29b-41d4-a716-446655440000",
-  "message": "视频上传成功，开始处理",
-  "status": "pending"
+  "detail": "不支持的文件格式。仅支持 .zip 格式"
 }
 ```
 
-### 2. 查询任务状态
-
-```bash
-curl -X GET "http://localhost:3080/status/550e8400-e29b-41d4-a716-446655440000"
-```
-
-**响应：**
+**任务不存在：**
 ```json
 {
-  "task_id": "550e8400-e29b-41d4-a716-446655440000",
-  "status": "processing",
-  "progress": 75.0,
-  "current_step": "三维重建训练中",
-  "message": "正在进行Gaussian Splatting训练...",
-  "created_at": "2024-01-15T10:30:00Z",
-  "updated_at": "2024-01-15T10:37:30Z",
-  "result_path": null,
-  "error_message": null,
-  "estimated_time_remaining": 60.0,
-  "processing_time": 450.2
+  "detail": "任务不存在"
 }
 ```
 
-### 3. 下载结果文件
-
-```bash
-curl -X GET "http://localhost:3080/result/550e8400-e29b-41d4-a716-446655440000" \
-  -o point_cloud_result.ply
+**任务尚未完成：**
+```json
+{
+  "detail": "任务尚未完成，无法获取结果"
+}
 ```
 
-### 4. JavaScript 示例
+## 完整的前端集成示例
+
+### JavaScript 完整工作流程
 
 ```javascript
-// 上传文件
-async function uploadFile(file, email) {
-  const formData = new FormData();
-  formData.append('file', file);
-  
-  const url = email ? `http://localhost:3080/upload?email=${encodeURIComponent(email)}` : 'http://localhost:3080/upload';
-  
-  const response = await fetch(url, {
-    method: 'POST',
-    body: formData
-  });
-  
-  return await response.json();
-}
+class InstantSplatAPI {
+  constructor(baseUrl = 'http://localhost:8003') {
+    this.baseUrl = baseUrl;
+  }
 
-// 查询任务状态
-async function getTaskStatus(taskId) {
-  const response = await fetch(`http://localhost:3080/status/${taskId}`);
-  return await response.json();
-}
-
-// 轮询任务状态直到完成
-async function waitForCompletion(taskId) {
-  while (true) {
-    const status = await getTaskStatus(taskId);
-    console.log(`任务进度: ${status.progress}% - ${status.current_step}`);
+  // 上传文件并开始处理
+  async uploadFile(file, email = null, points = null) {
+    const formData = new FormData();
+    formData.append('file', file);
     
-    if (status.status === 'completed') {
-      console.log('任务完成！');
-      return status;
-    } else if (status.status === 'failed') {
-      throw new Error(`任务失败: ${status.error_message}`);
+    if (email) {
+      formData.append('email', email);
     }
     
-    // 等待5秒后再次查询
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    if (points) {
+      formData.append('points', JSON.stringify(points));
+    }
+
+    const response = await fetch(`${this.baseUrl}/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (!response.ok) {
+      throw new Error(`上传失败: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  // 查询任务状态
+  async getTaskStatus(taskId) {
+    const response = await fetch(`${this.baseUrl}/status/${taskId}`);
+    
+    if (!response.ok) {
+      throw new Error(`查询失败: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  // 轮询任务状态直到完成
+  async waitForCompletion(taskId, onProgress = null) {
+    while (true) {
+      const status = await this.getTaskStatus(taskId);
+      
+      if (onProgress) {
+        onProgress(status);
+      }
+
+      if (status.status === 'completed') {
+        return status;
+      } else if (status.status === 'failed') {
+        throw new Error(`任务失败: ${status.error_message}`);
+      }
+
+      // 等待5秒后再次查询
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+
+  // 获取处理结果
+  async getResult(taskId) {
+    const response = await fetch(`${this.baseUrl}/result/${taskId}`);
+    
+    if (!response.ok) {
+      throw new Error(`获取结果失败: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+
+  // 删除任务
+  async deleteTask(taskId) {
+    const response = await fetch(`${this.baseUrl}/task/${taskId}`, {
+      method: 'DELETE'
+    });
+
+    if (!response.ok) {
+      throw new Error(`删除任务失败: ${response.statusText}`);
+    }
+
+    return await response.json();
+  }
+}
+
+// 使用示例
+async function processImages() {
+  const api = new InstantSplatAPI();
+  
+  try {
+    // 1. 上传文件
+    const fileInput = document.getElementById('fileInput');
+    const file = fileInput.files[0];
+    const email = 'user@example.com';
+    const points = [(630, 283, 1, 0)]; // 可选的分割点
+    
+    console.log('开始上传文件...');
+    const uploadResult = await api.uploadFile(file, email, points);
+    console.log('上传成功:', uploadResult);
+    
+    const taskId = uploadResult.task_id;
+    
+    // 2. 等待处理完成
+    console.log('等待处理完成...');
+    const finalStatus = await api.waitForCompletion(taskId, (status) => {
+      console.log(`进度: ${status.progress}% - ${status.current_step}`);
+    });
+    
+    console.log('处理完成:', finalStatus);
+    
+    // 3. 获取结果
+    const result = await api.getResult(taskId);
+    console.log('结果:', result);
+    
+    // 4. 下载文件
+    if (result.files && result.files.length > 0) {
+      const downloadUrl = result.files[0].download_url;
+      window.open(downloadUrl, '_blank');
+    }
+    
+    // 5. 可选：删除任务
+    // await api.deleteTask(taskId);
+    
+  } catch (error) {
+    console.error('处理失败:', error);
   }
 }
 ```
 
----
+## 配置信息
 
-## 处理流程说明
-
-### 1. 视频处理流程
-1. **文件上传验证**：检查文件格式、大小和完整性
-2. **视频帧提取**：从视频中提取关键帧（默认15帧）
-3. **几何初始化**：使用MASt3R进行初始几何重建
-4. **三维重建训练**：使用Gaussian Splatting进行训练（500次迭代）
-5. **结果渲染**：生成最终的点云文件
-6. **邮件通知**：发送处理完成通知（如提供邮箱）
-
-### 2. 图像处理流程
-1. **文件上传验证**：检查图像格式、大小和完整性
-2. **图像预处理**：调整图像尺寸和格式
-3. **几何初始化**：使用MASt3R进行初始几何重建
-4. **三维重建训练**：使用Gaussian Splatting进行训练
-5. **结果渲染**：生成最终的点云文件
-6. **邮件通知**：发送处理完成通知（如提供邮箱）
-
-### 3. 多图像处理流程（ZIP文件）
-1. **压缩包验证**：检查ZIP文件完整性
-2. **图像提取**：从ZIP中提取所有图像文件
-3. **图像验证**：确保至少有3张有效图像
-4. **批量处理**：按照图像处理流程处理所有图像
-5. **结果合并**：生成综合的三维重建结果
-6. **邮件通知**：发送处理完成通知（如提供邮箱）
-
----
-
-## 注意事项
-
-### 1. 性能考虑
-- 最大并发处理任务数：2个
-- 建议文件大小：视频 < 200MB，图像 < 50MB
-- 处理时间：视频约5-15分钟，图像约2-8分钟
-
-### 2. 文件要求
-- 视频：建议分辨率不超过1920×1080，时长不超过5分钟
-- 图像：建议分辨率在512×512到2048×2048之间
-- ZIP文件：包含至少3张图像，总大小不超过500MB
-
-### 3. 安全考虑
-- 所有上传文件都会进行格式验证
-- 任务文件会在24小时后自动清理
-- 不支持可执行文件上传
-
-### 4. 错误处理
-- 建议实现客户端重试机制
-- 长时间运行的任务可能会超时
-- 网络中断时需要重新查询任务状态
-
----
-
-## 更新日志
-
-### v1.0.0 (2024-01-15)
-- 初始版本发布
-- 支持视频、图像和ZIP文件上传
-- 实现异步三维重建处理
-- 添加邮件通知功能
-- 提供完整的任务管理接口
-
----
-
-## 联系信息
-
-如有问题或建议，请联系开发团队。
-
-**技术支持：** 请查看服务器日志文件 `api_server.log` 获取详细错误信息。
+API服务的相关配置通过 `config.py` 模块管理，包括：
+- 文件大小限制
+- 支持的文件格式
+- 存储路径配置
+- 邮件服务配置
